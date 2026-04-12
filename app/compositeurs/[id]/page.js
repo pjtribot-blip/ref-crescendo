@@ -1,0 +1,69 @@
+import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
+import { notFound } from 'next/navigation'
+
+export async function generateMetadata({ params }) {
+  const id = (await params).id
+  const { data: c } = await supabase.from('compositeurs').select('name, description').eq('id', id).single()
+  if (!c) return {}
+  return { title: `${c.name} — Référence Crescendo`, description: c.description?.slice(0, 160) }
+}
+
+export default async function CompositeurPage({ params }) {
+  const id = (await params).id
+  const { data: c } = await supabase.from('compositeurs').select('*').eq('id', id).single()
+  if (!c) notFound()
+
+  const { data: albums } = await supabase
+    .from('albums')
+    .select('id, title, article_title, label, published_at, critique_url, notes, cover_url')
+    .contains('composers', [c.name])
+    .order('published_at', { ascending: false })
+    .limit(20)
+
+  return (
+    <main className="max-w-3xl mx-auto px-4 py-10">
+      <Link href="/compositeurs" className="text-sm text-stone-400 hover:text-stone-600 mb-6 inline-block">← Compositeurs</Link>
+      <div className="mb-8">
+        <div className="flex items-start justify-between gap-4 mb-2">
+          <h1 className="text-3xl font-light text-stone-800">{c.name}</h1>
+          {c.familiarity === 'rare' && <span className="text-xs border border-amber-400 text-amber-600 px-2 py-1 rounded shrink-0 mt-1">Rare</span>}
+        </div>
+        <p className="text-stone-400 text-sm mb-4">
+          {c.born && c.died ? `${c.born}–${c.died}` : ''}{c.nationality ? ` · ${c.nationality}` : ''}{c.period ? ` · ${c.period}` : ''}
+        </p>
+        {c.description && <p className="text-stone-600 leading-relaxed">{c.description}</p>}
+      </div>
+      {c.key_works?.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-xs font-medium uppercase tracking-widest text-stone-400 mb-3">Œuvres majeures</h2>
+          <ul className="space-y-1">
+            {c.key_works.map((w, i) => (
+              <li key={i} className="text-stone-600 text-sm flex gap-2"><span className="text-stone-300">○</span> {w}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+      <section className="mb-10 flex gap-3 flex-wrap">
+        <a href={`https://www.crescendo-magazine.be/?s=${encodeURIComponent(c.name)}`} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 border border-stone-300 rounded hover:border-stone-500 text-stone-600 transition-colors">Rechercher sur Crescendo</a>
+        <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(c.name)}`} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 border border-stone-300 rounded hover:border-stone-500 text-stone-600 transition-colors">YouTube</a>
+      </section>
+      {albums && albums.length > 0 && (
+        <section>
+          <h2 className="text-xs font-medium uppercase tracking-widest text-stone-400 mb-4">Critiques Crescendo ({albums.length})</h2>
+          <div className="space-y-3">
+            {albums.map(a => (
+              <a key={a.id} href={a.critique_url} target="_blank" rel="noopener noreferrer" className="flex gap-3 p-3 border border-stone-200 rounded-lg hover:border-stone-400 transition-all group">
+                {a.cover_url && <img src={a.cover_url} alt="" className="w-12 h-12 object-cover rounded shrink-0" />}
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-stone-700 group-hover:text-stone-900 truncate">{a.title || a.article_title}</p>
+                  <p className="text-xs text-stone-400 mt-0.5">{a.label && `${a.label} · `}{a.published_at ? new Date(a.published_at).getFullYear() : ''}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+    </main>
+  )
+}
