@@ -13,6 +13,7 @@ export default function RootLayout({ children }) {
             <div className="flex gap-6 text-sm text-stone-500">
               <a href="/compositeurs" className="hover:text-stone-800 transition-colors">Compositeurs</a>
               <a href="/albums" className="hover:text-stone-800 transition-colors">Albums</a>
+              <a href="/recherche" className="hover:text-stone-800 transition-colors">Recherche</a>
               <a href="https://www.crescendo-magazine.be" target="_blank" rel="noopener noreferrer" className="hover:text-stone-800 transition-colors">Magazine →</a>
             </div>
           </div>
