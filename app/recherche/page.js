@@ -10,8 +10,17 @@ export default async function RecherchePage({ searchParams }) {
 
   if (q.length >= 2) {
     const [{ data: comps }, { data: albs }] = await Promise.all([
-      supabase.from('compositeurs').select('id, name, period, born, died, familiarity').ilike('name', `%${q}%`).limit(12),
-      supabase.from('albums').select('id, title, article_title, label, published_at, critique_url, cover_url').or(`title.ilike.%${q}%,article_title.ilike.%${q}%`).order('published_at', { ascending: false }).limit(12),
+      supabase
+        .from('compositeurs')
+        .select('id, name, period, born, died, familiarity')
+        .ilike('name', `%${q}%`)
+        .limit(50),
+      supabase
+        .from('albums')
+        .select('id, title, article_title, label, published_at, critique_url, cover_url')
+        .or(`title.ilike.%${q}%,article_title.ilike.%${q}%,label.ilike.%${q}%,header_raw.ilike.%${q}%`)
+        .order('published_at', { ascending: false })
+        .limit(50),
     ])
     compositeurs = comps || []
     albums = albs || []
@@ -22,7 +31,7 @@ export default async function RecherchePage({ searchParams }) {
       <h1 className="text-3xl font-light mb-6 text-stone-800">Recherche</h1>
       <form method="GET" action="/recherche" className="mb-10">
         <div className="flex gap-3">
-          <input type="text" name="q" defaultValue={q} placeholder="Compositeur, album, label..." autoFocus className="flex-1 px-4 py-3 border border-stone-300 rounded-lg text-stone-800 focus:outline-none focus:border-stone-500" />
+          <input type="text" name="q" defaultValue={q} placeholder="Compositeur, album, label, interprète..." autoFocus className="flex-1 px-4 py-3 border border-stone-300 rounded-lg text-stone-800 focus:outline-none focus:border-stone-500" />
           <button type="submit" className="px-6 py-3 bg-stone-800 text-white rounded-lg hover:bg-stone-700 transition-colors">Rechercher</button>
         </div>
       </form>
@@ -38,6 +47,7 @@ export default async function RecherchePage({ searchParams }) {
                       <p className="font-medium text-stone-800 text-sm">{c.name}</p>
                       <p className="text-xs text-stone-400">{c.born && c.died ? `${c.born}–${c.died}` : ''}{c.period ? ` · ${c.period}` : ''}</p>
                     </div>
+                    {c.familiarity === 'rare' && <span className="ml-auto text-xs border border-amber-400 text-amber-600 px-1.5 py-0.5 rounded shrink-0">Rare</span>}
                   </Link>
                 ))}
               </div>
@@ -59,9 +69,10 @@ export default async function RecherchePage({ searchParams }) {
               </div>
             </section>
           )}
-          {compositeurs.length === 0 && albums.length === 0 && <p className="text-stone-400 text-center py-10">Aucun résultat</p>}
+          {compositeurs.length === 0 && albums.length === 0 && <p className="text-stone-400 text-center py-10">Aucun résultat pour « {q} »</p>}
         </div>
       )}
+      {q.length < 2 && <p className="text-stone-400 text-center py-10">Tapez au moins 2 caractères pour rechercher</p>}
     </main>
   )
 }
