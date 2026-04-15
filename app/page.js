@@ -38,11 +38,7 @@ export default async function Home() {
           <Link href="/compositeurs" className="px-6 py-3 bg-stone-800 text-white rounded-lg hover:bg-stone-700 transition-colors">608 Compositeurs</Link>
           <Link href="/albums" className="px-6 py-3 border border-stone-300 text-stone-600 rounded-lg hover:border-stone-500 transition-colors">5190 Albums</Link>
           <Link href="/labels" className="px-6 py-3 border border-stone-300 text-stone-600 rounded-lg hover:border-stone-500 transition-colors">Labels</Link>
-          <Link href="/re
-cat > app/page.js << 'EOF'
-import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
-
+          <Link href="/recherche" className="px-6 py-3 border border-stone-300 text-stone-600 rounded-lg hover:border-stone-500 transition-colors">Recherche</Link>
 export default async function Home() {
   const { data: albums } = await supabase
     .from('albums')
