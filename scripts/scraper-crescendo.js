@@ -1,4 +1,4 @@
-// scraper-crescendo.js v4 — avec parseHeader amélioré
+// scraper-crescendo.js v4.1 — intègre normalizeLabel depuis labels-whitelist.js
 //
 // Usage :
 //   SUPABASE_URL=... SUPABASE_SERVICE_KEY=... node scraper-crescendo.js
@@ -12,6 +12,7 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { parse } from 'node-html-parser'
+import { normalizeLabel } from './labels-whitelist.js'
 
 const SUPABASE_URL = process.env.SUPABASE_URL
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY
@@ -62,26 +63,25 @@ async function fetchHTML(url) {
   return parse(await res.text())
 }
 
-// Nettoyage d'un nom de compositeur
 function cleanComposerName(raw) {
   if (!raw) return null
   let name = raw
-    .replace(/\s*\([\d\w\s\-–°?c\.]+\)/g, '')  // supprime (1685-1750), (°1963), (c.1600) etc.
-    .replace(/\s*\[.*?\]/g, '')                   // supprime [attrib.] etc.
-    .replace(/\s+v\.\s*$/, '')                    // supprime "v." en fin
-    .replace(/\s+c\.\s*$/, '')                    // supprime "c." en fin
-    .replace(/[*°†]+/g, '')                       // supprime signes diacritiques parasites
+    .replace(/\s*\([\d\w\s\-–°?c\.]+\)/g, '')
+    .replace(/\s*\[.*?\]/g, '')
+    .replace(/\s+v\.\s*$/, '')
+    .replace(/\s+c\.\s*$/, '')
+    .replace(/[*°†]+/g, '')
     .trim()
 
-  // Vérifications : rejeter si trop court, trop long, ou texte parasite
   if (name.length < 3) return null
   if (name.length > 60) return null
-  if (/^\d/.test(name)) return null              // commence par un chiffre
-  if (/[.,:;!?]/.test(name)) return null         // contient ponctuation parasite
+  if (/^\d/.test(name)) return null
+  if (/[.,:;!?]/.test(name)) return null
   if (/\b(pour|avec|et|de la|du|au|les|des|son|sa|ses)\b/i.test(name) && name.split(' ').length > 3) return null
   if (/\b(sonate|concerto|symphonie|suite|quatuor|trio|duo|air|messe|requiem|cantate|fugue|prélude|fantaisie)\b/i.test(name)) return null
   if (/\b(soprano|ténor|alto|baryton|basse|piano|violon|violoncelle|flûte|hautbois|cor|trompette)\b/i.test(name)) return null
   if (/\b(orchestre|ensemble|quartet|quintet|sextet)\b/i.test(name.toLowerCase())) return null
+  if (/\b(livret|texte|notice|anglais|français|allemand|aussi|disponible)\b/i.test(name)) return null
 
   return name
 }
@@ -90,22 +90,17 @@ function parseHeader(text) {
   const result = { title: null, composers: [], label: null, duration: null, recording_date: null }
   if (!text) return result
 
-  // Titre : entre ** ou première partie avant le premier ;
   const titleMatch = text.match(/\*{1,3}([^*]+)\*{1,3}/)
   if (titleMatch) result.title = titleMatch[1].trim().replace(/[.*]$/, '')
 
-  // Durée
   const durMatch = text.match(/(\d{1,3}['′']\s*\d{2}['″′'']{1,2}|\d+h\d+)/)
   if (durMatch) result.duration = durMatch[1]
 
-  // Date d'enregistrement
   const dateMatch = text.match(/(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s+(\d{4})/i)
   if (dateMatch) result.recording_date = `${dateMatch[1]} ${dateMatch[2]}`
 
-  // Compositeurs : plusieurs patterns
   const composers = new Set()
 
-  // Pattern 1 : "Oeuvres de X, Y et Z"
   const compMatch = text.match(/[ŒO]uvres?\s+de\s+([^.;\n]{5,300})/i)
   if (compMatch) {
     compMatch[1]
@@ -115,8 +110,6 @@ function parseHeader(text) {
       .forEach(c => composers.add(c))
   }
 
-  // Pattern 2 : "NOM Prénom (date-date) : Titre de l'oeuvre"
-  // Cherche les noms sous forme "Prénom NOM" suivis de dates et deux-points
   const compPattern2 = /([A-ZÀ-Ÿa-zà-ÿ][a-zà-ÿ]+(?:\s+[A-ZÀ-Ÿ][A-ZÀ-Ÿa-zà-ÿ\-]+)+)\s*(?:\([\d\w\s\-–°?c\.]+\))?\s*:/g
   let m
   while ((m = compPattern2.exec(text)) !== null) {
@@ -124,23 +117,42 @@ function parseHeader(text) {
     if (name) composers.add(name)
   }
 
-  result.composers = [...composers].slice(0, 10) // max 10 compositeurs
+  result.composers = [...composers].slice(0, 10)
 
-  // Label : dernier segment significatif avant le numéro de catalogue
-  // Pattern : label suivi d'un code alphanumérique
+  // === EXTRACTION LABEL BRUT (v4) ===
+  let rawLabel = null
+
+  // Tentative 1 : pattern "– LabelName CODE123"
   const labelMatch = text.match(/[-–]\s*([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ\s&']+?)\s+[A-Z]{1,5}[\s\-]?\d/u)
   if (labelMatch) {
-    result.label = labelMatch[1].trim()
-  } else {
-    // Fallback : dernier segment court sans virgule ni chiffre au début
+    const candidate = labelMatch[1].trim()
+    if (!candidate.includes(' ') || candidate.split(' ').length <= 3) {
+      rawLabel = candidate
+    }
+  }
+
+  // Tentative 2 : dernier segment avant fin
+  if (!rawLabel) {
     const segments = text.split(/\.\s+/)
     for (let i = segments.length - 1; i >= 0; i--) {
       const s = segments[i].trim().replace(/[.*]$/, '')
-      if (s.length > 1 && s.length < 50 && !s.includes(',') && !/^\d/.test(s) && /[A-Za-z]/.test(s)) {
-        result.label = s; break
+      if (
+        s.length > 1 && s.length < 40 &&
+        !s.includes(',') &&
+        !/^\d/.test(s) &&
+        /[A-Za-z]/.test(s) &&
+        !/\b(livret|texte|notice|anglais|français|allemand|aussi|disponible|blu.ray)\b/i.test(s) &&
+        !/^(Bernadette|Jean|Pierre|Marie|François|Philippe|Alain|Bernard|Guy|Axel|Carlo)/i.test(s)
+      ) {
+        rawLabel = s; break
       }
     }
   }
+
+  // === VALIDATION PAR WHITELIST (v4.1) ===
+  // normalizeLabel retourne null si le candidat n'est pas un vrai label
+  // → évite d'écrire des parasites en base
+  result.label = normalizeLabel(rawLabel)
 
   return result
 }
@@ -194,14 +206,38 @@ async function processPost(post) {
   }
 }
 
+// Récupère les données existantes en batch pour éviter N+1 queries
+async function getExistingData(ids) {
+  const { data } = await supabase
+    .from('albums')
+    .select('id, label, cover_url')
+    .in('id', ids)
+  return data ? Object.fromEntries(data.map(d => [d.id, d])) : {}
+}
+
 async function upsertAlbums(albums) {
-  const { error } = await supabase.from('albums').upsert(albums, { onConflict: 'id' })
+  // Récupérer les données existantes en une seule requête
+  const ids = albums.map(a => a.id)
+  const existing = await getExistingData(ids)
+
+  // Préserver label et cover_url si déjà renseignés en base
+  // (la base a été nettoyée en v3.2, donc les labels existants sont tous valides)
+  const toUpsert = albums.map(album => {
+    const ex = existing[album.id]
+    if (ex) {
+      if (ex.label) album.label = ex.label
+      if (ex.cover_url) album.cover_url = ex.cover_url
+    }
+    return album
+  })
+
+  const { error } = await supabase.from('albums').upsert(toUpsert, { onConflict: 'id' })
   if (error) console.error('  ✗ Supabase:', error.message)
-  else console.log(`  ✓ ${albums.length} albums insérés/mis à jour`)
+  else console.log(`  ✓ ${toUpsert.length} albums insérés/mis à jour`)
 }
 
 async function main() {
-  console.log(`🎵 Scraper Crescendo v4 — ${DRY_RUN ? 'DRY RUN' : 'PRODUCTION'}`)
+  console.log(`🎵 Scraper Crescendo v4.1 (whitelist-validated) — ${DRY_RUN ? 'DRY RUN' : 'PRODUCTION'}`)
   console.log(`   Pages ${START_PAGE} → ${START_PAGE + MAX_PAGES - 1} | Pause ${PAUSE_BETWEEN_PAGES/1000}s/page\n`)
   const allArticles = []
 
