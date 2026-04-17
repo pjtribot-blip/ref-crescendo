@@ -18,7 +18,9 @@ async function fetchCover(url) {
     })
     if (!res.ok) return null
     const doc = parse(await res.text())
-    const img = doc.querySelector('.entry-content img')
+    const img = doc.querySelector('img.wp-post-image') 
+             || doc.querySelector('.content img') 
+             || doc.querySelector('.entry-content img')
     return img?.getAttribute('src') || null
   } catch (err) {
     return null
@@ -60,7 +62,6 @@ async function main() {
           process.stdout.write('!')
         }
       } else {
-        // Marquer avec une URL vide pour ne pas retraiter
         await supabase.from('albums').update({ cover_url: '' }).eq('id', album.id)
         process.stdout.write('·')
       }
