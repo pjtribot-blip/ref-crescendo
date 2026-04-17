@@ -10,12 +10,11 @@ const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 
 export default async function JokersPage() {
   const { data: albums, count } = await supabase
     .from('albums')
-    .select('id, title, article_title, label, published_at, critique_url, cover_url, composers', { count: 'exact' })
+    .select('id, title, article_title, label, published_at, critique_url, cover_url', { count: 'exact' })
     .eq('is_joker', true)
     .not('published_at', 'is', null)
     .order('published_at', { ascending: false })
 
-  // Grouper par année-mois
   const groups = {}
   albums?.forEach(a => {
     const d = new Date(a.published_at)
@@ -30,43 +29,22 @@ export default async function JokersPage() {
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-light mb-2 text-stone-800">Jokers</h1>
-      <p className="text-stone-500 mb-10">
-        {count} coups de cœur Joker · Les albums d'exception sélectionnés par la rédaction de Crescendo Magazine
-      </p>
-
+      <p className="text-stone-500 mb-10">{count} coups de cœur Joker · Les albums d'exception sélectionnés par Crescendo Magazine</p>
       {sortedKeys.map(key => (
         <section key={key} className="mb-12">
-          <h2 className="text-xs font-medium uppercase tracking-widest text-stone-400 mb-4 capitalize">
-            {groups[key].label} <span className="text-stone-300 normal-case font-light">· {groups[key].albums.length} album{groups[key].albums.length > 1 ? 's' : ''}</span>
-          </h2>
+          <h2 className="text-xs font-medium uppercase tracking-widest text-stone-400 mb-4 capitalize">{groups[key].label} <span className="text-stone-300 normal-case font-light">· {groups[key].albums.length} album{groups[key].albums.length > 1 ? 's' : ''}</span></h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {groups[key].albums.map(a => (
-              
-                key={a.id}
-                href={a.critique_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block border border-stone-200 rounded-lg overflow-hidden hover:border-stone-400 hover:shadow-sm transition-all relative"
-              >
+              <a key={a.id} href={a.critique_url} target="_blank" rel="noopener noreferrer" className="block border border-stone-200 rounded-lg overflow-hidden hover:border-stone-400 hover:shadow-sm transition-all relative">
                 {a.cover_url ? (
-                  <div className="aspect-square bg-stone-100 overflow-hidden">
-                    <img src={a.cover_url} alt="" className="w-full h-full object-cover" />
-                  </div>
+                  <div className="aspect-square bg-stone-100 overflow-hidden"><img src={a.cover_url} alt="" className="w-full h-full object-cover" /></div>
                 ) : (
-                  <div className="aspect-square bg-stone-100 flex items-center justify-center">
-                    <span className="text-stone-300 text-4xl">♪</span>
-                  </div>
+                  <div className="aspect-square bg-stone-100 flex items-center justify-center"><span className="text-stone-300 text-4xl">♪</span></div>
                 )}
-                <div className="absolute top-2 right-2 bg-amber-500 text-white text-xs font-semibold px-2 py-0.5 rounded">
-                  JOKER
-                </div>
+                <div className="absolute top-2 right-2 bg-amber-500 text-white text-xs font-semibold px-2 py-0.5 rounded">JOKER</div>
                 <div className="p-3">
-                  <p className="font-medium text-stone-800 text-sm leading-snug line-clamp-2 mb-1">
-                    {a.title || a.article_title}
-                  </p>
-                  <p className="text-xs text-stone-400">
-                    {a.label && `${a.label}`}
-                  </p>
+                  <p className="font-medium text-stone-800 text-sm leading-snug line-clamp-2 mb-1">{a.title || a.article_title}</p>
+                  <p className="text-xs text-stone-400">{a.label && `${a.label}`}</p>
                 </div>
               </a>
             ))}
