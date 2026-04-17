@@ -15,7 +15,8 @@ export default async function Home() {
         <p className="text-stone-500 mb-8 text-lg">La base de référence en musique classique</p>
         <div className="flex gap-4 justify-center flex-wrap">
           <Link href="/compositeurs" className="px-6 py-3 bg-stone-800 text-white rounded-lg hover:bg-stone-700 transition-colors">608 Compositeurs</Link>
-          <Link href="/albums" className="px-6 py-3 border border-stone-300 text-stone-600 rounded-lg hover:border-stone-500 transition-colors">5190 Albums</Link>
+          <Link href="/interpretes" className="px-6 py-3 border border-stone-300 text-stone-600 rounded-lg hover:border-stone-500 transition-colors">2065 Interprètes</Link>
+          <Link href="/albums" className="px-6 py-3 border border-stone-300 text-stone-600 rounded-lg hover:border-stone-500 transition-colors">5213 Albums</Link>
           <Link href="/labels" className="px-6 py-3 border border-stone-300 text-stone-600 rounded-lg hover:border-stone-500 transition-colors">Labels</Link>
           <Link href="/recherche" className="px-6 py-3 border border-stone-300 text-stone-600 rounded-lg hover:border-stone-500 transition-colors">Recherche</Link>
         </div>
@@ -27,13 +28,21 @@ export default async function Home() {
           {albums?.map(a => (
             <a key={a.id} href={a.critique_url} target="_blank" rel="noopener noreferrer"
               className="flex gap-3 p-3 border border-stone-200 rounded-lg hover:border-stone-400 transition-all group">
-              {a.cover_url
-                ? <img src={a.cover_url} alt="" className="w-12 h-12 object-cover rounded shrink-0" />
-                : <div className="w-12 h-12 bg-stone-100 rounded shrink-0 flex items-center justify-center"><span className="text-stone-300">♪</span></div>
-              }
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-stone-700 group-hover:text-stone-900 line-clamp-1">{a.title || a.article_title}</p>
-                <p className="text-xs text-stone-400 mt-0.5">{a.label ? a.label + ' · ' : ''}{a.published_at ? new Date(a.published_at).toLocaleDateString('fr-FR', {day: 'numeric', month: 'long', year: 'numeric'}) : ''}</p>
+              {a.cover_url ? (
+                <img src={a.cover_url} alt="" className="w-16 h-16 object-cover rounded" />
+              ) : (
+                <div className="w-16 h-16 bg-stone-100 flex items-center justify-center rounded">
+                  <span className="text-stone-300 text-2xl">♪</span>
+                </div>
+              )}
+              <div className="flex-1">
+                <p className="font-medium text-stone-800 text-sm leading-snug mb-0.5">
+                  {a.title || a.article_title}
+                </p>
+                <p className="text-xs text-stone-400">
+                  {a.label && `${a.label} · `}
+                  {a.published_at ? new Date(a.published_at).toLocaleDateString('fr-FR', {day: 'numeric', month: 'long', year: 'numeric'}) : ''}
+                </p>
               </div>
             </a>
           ))}
