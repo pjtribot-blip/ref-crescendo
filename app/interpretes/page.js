@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase'
 
 export const metadata = {
   title: 'Interprètes — Référence Crescendo',
-  description: 'Interprètes de musique classique chroniqués par Crescendo Magazine : chefs d\'orchestre, solistes, ensembles.',
+  description: 'Interprètes de musique classique chroniqués par Crescendo Magazine.',
 }
 
 export default async function InterpretesPage({ searchParams }) {
@@ -36,49 +36,29 @@ export default async function InterpretesPage({ searchParams }) {
           type="text"
           name="q"
           defaultValue={search}
-          placeholder="Rechercher un interprète (ex : Jansons, Argerich, LSO...)"
-          className="flex-1 min-w-64 border border-stone-300 rounded px-3 py-1.5 text-sm text-stone-700 bg-white hover:border-stone-400 focus:border-stone-500 focus:outline-none"
+          placeholder="Rechercher un interprète..."
+          className="flex-1 min-w-64 border border-stone-300 rounded px-3 py-1.5 text-sm"
         />
-        <button
-          type="submit"
-          className="px-4 py-1.5 border border-stone-400 rounded text-sm text-stone-700 hover:bg-stone-100 transition-colors"
-        >
+        <button type="submit" className="px-4 py-1.5 border border-stone-400 rounded text-sm hover:bg-stone-100">
           Rechercher
         </button>
         {search && (
-          <Link
-            href="/interpretes"
-            className="px-4 py-1.5 text-sm text-stone-500 hover:text-stone-700 underline"
-          >
+          <Link href="/interpretes" className="px-4 py-1.5 text-sm text-stone-500 underline">
             Réinitialiser
           </Link>
         )}
       </form>
 
-      {total === 0 && search && (
-        <p className="text-stone-500 italic">Aucun interprète ne correspond à votre recherche.</p>
-      )}
-
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
         {interprets?.map((i) => (
-          <Link
-            key={i.name}
-            href={`/interpretes/${encodeURIComponent(i.name)}`}
-            className="block p-4 border border-stone-200 rounded-lg hover:border-stone-400 hover:shadow-sm transition-all"
-          >
-            <p className="font-medium text-stone-800 text-sm leading-snug mb-1">{i.name}</p>
+          <div key={i.name} className="block p-4 border border-stone-200 rounded-lg">
+            <p className="font-medium text-stone-800 text-sm mb-1">{i.name}</p>
             <p className="text-xs text-stone-400">
               {i.nb_albums} album{i.nb_albums > 1 ? 's' : ''}
             </p>
-          </Link>
+          </div>
         ))}
       </div>
-
-      {!search && total >= 500 && (
-        <p className="text-stone-400 text-sm text-center mt-10">
-          500 premiers interprètes affichés · Utilisez la recherche pour trouver les autres
-        </p>
-      )}
     </main>
   )
 }
