@@ -51,13 +51,6 @@ const EXPLORER_TONES = {
   orange: 'border-orange-200 bg-orange-50/40 hover:border-orange-400',
 }
 
-const CATEGORIES_BADGE = {
-  prix_special: 'Prix B. Beyne & M. Debra',
-  enregistrement_annee: "Enregistrement de l'année",
-  matrimoine: 'Millésime Matrimoine',
-  autre: 'Millésime',
-}
-
 export default async function Home() {
   const [
     albumsCountRes,
@@ -67,7 +60,7 @@ export default async function Home() {
     labelsRes,
     millesimesByYearRes,
     latestAlbumsRes,
-    latestMillesimesRes,
+    latestJokersRes,
   ] = await Promise.all([
     supabase.from('albums').select('*', { count: 'exact', head: true }),
     supabase.from('compositeurs').select('*', { count: 'exact', head: true }),
@@ -83,10 +76,11 @@ export default async function Home() {
       .limit(8),
     supabase
       .from('albums')
-      .select('id, title, composers, label, critique_url, cover_url, millesime_annee, millesime_label, millesime_categorie, published_at')
-      .not('millesime_annee', 'is', null)
+      .select('id, title, composers, label, critique_url, cover_url, published_at')
+      .eq('is_joker', true)
+      .not('published_at', 'is', null)
       .order('published_at', { ascending: false })
-      .limit(3),
+      .limit(6),
   ])
 
   const nbAlbums = albumsCountRes.count || 0
@@ -103,7 +97,7 @@ export default async function Home() {
   const millesimesEditions = ANNEES_MILLESIMES.map(y => ({ annee: y, total: parAnnee[y] || 0 }))
 
   const latestAlbums = latestAlbumsRes.data || []
-  const latestMillesimes = latestMillesimesRes.data || []
+  const latestJokers = latestJokersRes.data || []
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-12">
@@ -172,26 +166,28 @@ export default async function Home() {
       </section>
 
       <section className="mb-20">
-        <div className="flex flex-wrap items-baseline justify-between gap-3 mb-6 pb-2 border-b border-stone-200">
-          <h2 className="text-3xl font-serif text-stone-900">Derniers Millésimes</h2>
-          <Link href="/palmares" className="text-sm text-amber-700 hover:text-amber-900 underline underline-offset-4">
-            Tous les palmarès →
+        <div className="flex flex-wrap items-baseline justify-between gap-3 mb-4 pb-2 border-b border-stone-200">
+          <h2 className="text-3xl font-serif text-stone-900">Derniers Jokers</h2>
+          <Link href="/jokers" className="text-sm text-amber-700 hover:text-amber-900 underline underline-offset-4">
+            Voir tous les Jokers →
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {latestMillesimes.map(a => {
+        <p className="text-stone-600 mb-6 leading-relaxed">
+          Les coups de cœur de la rédaction, décernés tout au long de l&apos;année aux enregistrements remarquables.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {latestJokers.map(a => {
             const composer = Array.isArray(a.composers) ? (a.composers[0] || '') : (a.composers || '')
-            const badge = a.millesime_label || CATEGORIES_BADGE[a.millesime_categorie] || 'Millésime'
             return (
               <a
                 key={a.id}
                 href={a.critique_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block border border-amber-300 bg-amber-50/40 rounded-xl overflow-hidden hover:border-amber-500 hover:shadow-md transition-all relative"
+                className="block border border-stone-200 rounded-xl overflow-hidden hover:border-orange-400 hover:shadow-md transition-all relative"
               >
-                <div className="absolute top-2 right-2 z-10 bg-amber-100 border border-amber-300 text-amber-900 text-[10px] font-semibold px-2 py-0.5 rounded uppercase tracking-wider">
-                  ★ {badge}
+                <div className="absolute top-2 right-2 z-10 bg-orange-100 border border-orange-300 text-orange-800 text-[10px] font-semibold px-2 py-0.5 rounded uppercase tracking-wider">
+                  ★ Joker
                 </div>
                 {a.cover_url ? (
                   <div className="aspect-square bg-stone-100 overflow-hidden">
@@ -207,14 +203,21 @@ export default async function Home() {
                     {a.title}
                   </p>
                   {composer && <p className="text-xs text-stone-600 mb-1 line-clamp-1">{composer}</p>}
-                  {a.label && <p className="text-xs text-stone-400 uppercase tracking-wider">{a.label}</p>}
-                  {a.millesime_annee && (
-                    <p className="text-xs text-amber-800 mt-2">Millésime {a.millesime_annee}</p>
+                  {a.label && <p className="text-xs text-stone-400 uppercase tracking-wider mb-2">{a.label}</p>}
+                  {a.published_at && (
+                    <p className="text-xs text-stone-500">
+                      {new Date(a.published_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    </p>
                   )}
                 </div>
               </a>
             )
           })}
+        </div>
+        <div className="mt-6 text-center">
+          <Link href="/jokers" className="text-sm text-amber-700 hover:text-amber-900 underline underline-offset-4">
+            Voir tous les Jokers →
+          </Link>
         </div>
       </section>
 
