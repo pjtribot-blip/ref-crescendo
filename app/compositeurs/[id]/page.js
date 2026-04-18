@@ -53,6 +53,20 @@ export default async function CompositeurPage({ params }) {
           {c.born && c.died ? `${c.born}–${c.died}` : ''}{c.nationality ? ` · ${c.nationality}` : ''}{c.period ? ` · ${c.period}` : ''}
         </p>
 
+        {c.bio_enrichie && (
+          <section className="border-t border-b border-stone-200 py-6 my-6">
+            <h2 className="text-xs font-medium uppercase tracking-widest text-stone-500 mb-4">Présentation</h2>
+            <div className="font-serif text-base leading-relaxed text-stone-700 space-y-4">
+              {c.bio_enrichie.split(/\n\n+/).map((para, i) => (
+                <p key={i}>{para.trim()}</p>
+              ))}
+            </div>
+            <p className="text-xs italic text-stone-400 mt-6">
+              Notice éditoriale générée par Claude et relue par la rédaction Crescendo.
+            </p>
+          </section>
+        )}
+
         {(nbMillesimes > 0 || nbJokers > 0 || hasMatrimoine) && (
           <div className="flex flex-wrap gap-2 mb-5">
             {nbMillesimes > 0 && (
