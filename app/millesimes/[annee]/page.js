@@ -41,6 +41,13 @@ const EDITOS = {
       "L'année aura aussi été celle de grandes commémorations — <strong>anniversaires Messiaen et Xenakis</strong> — saluées par plusieurs parutions, et d'une dimension patrimoniale assumée : le coffret <strong>Ingrid Haebler</strong>, les archives <strong>Evgueni Svetlanov</strong>, autant de restitutions qui rappellent combien l'exhumation d'enregistrements historiques nourrit encore notre écoute contemporaine.",
     ],
   },
+  2021: {
+    sous_titre: "1ʳᵉ édition",
+    paragraphes: [
+      "2021 marque l'<strong>année de lancement des Millésimes</strong>, distinction annuelle imaginée par la rédaction de Crescendo Magazine pour saluer les parutions qui ont marqué l'année. Dès cette édition inaugurale, la rédaction instaure le <strong>« Millésime des Millésimes »</strong>, enregistrement de l'année, décerné à <em>Die Tote Stadt</em> de <strong>Korngold</strong> à Munich : production d'anthologie menée par <strong>Jonas Kaufmann</strong> sous la baguette de <strong>Kirill Petrenko</strong>, captation vidéo qui inaugure le nouveau label de la <strong>Staatsoper de Munich</strong>.",
+      "Le cru 2021 frappe par sa diversité, à l'image d'une année discographique qui aura su sortir des sentiers battus : le <strong>Berio</strong> de <strong>Stéphanie Richardot</strong>, les cantates de <strong>Bach</strong> par <strong>Philippe Pierlot</strong>, un chantier <strong>Andriessen</strong>, le <strong>Franck</strong> réédité par <strong>Musique en Wallonie</strong>, ou encore l'intégrale <strong>Furtwängler</strong> publiée par <strong>Warner</strong> — autant de propositions qui témoignent de la richesse d'une saison où le patrimoine dialogue avec la création contemporaine.",
+    ],
+  },
 }
 
 const ORDRE_CATEGORIES = ['prix_special', 'enregistrement_annee', 'matrimoine', 'autre']
@@ -68,7 +75,7 @@ async function getAlbumsAnnee(annee) {
 }
 
 export async function generateStaticParams() {
-  return [{ annee: '2022' }, { annee: '2023' }, { annee: '2024' }, { annee: '2025' }]
+  return [{ annee: '2021' }, { annee: '2022' }, { annee: '2023' }, { annee: '2024' }, { annee: '2025' }]
 }
 
 export default async function MillesimesAnneePage({ params }) {

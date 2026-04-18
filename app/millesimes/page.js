@@ -8,6 +8,7 @@ export const revalidate = 3600
 
 const DESCRIPTIONS = {
   2022: "Deuxième édition. Enregistrement de l'année : les concertos pour trompette de Tomasi, Jolivet, Jolas et Schmitt par Håkan Hardenberger et Fabien Gabel. Riche panorama de 525 critiques, entre redécouvertes patrimoniales (Haebler, Svetlanov) et scène belge (Alarcón, Libeer, FR2).",
+  2021: "Première édition. Enregistrement de l'année : Die Tote Stadt de Korngold par Jonas Kaufmann et Kirill Petrenko à Munich, vidéo inaugurant le nouveau label de l'Opéra d'État de Bavière. Panorama de 534 critiques et 120 Jokers en une année, où le patrimoine rencontre les découvertes contemporaines.",
 }
 
 async function getEditions() {
