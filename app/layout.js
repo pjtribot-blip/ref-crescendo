@@ -40,7 +40,10 @@ export default function RootLayout({ children }) {
               <a href="/millesimes" className="hover:text-amber-800 transition-colors text-amber-700 font-medium">Millésimes</a>
               <a href="/palmares" className="hover:text-amber-900 transition-colors text-amber-700 font-medium">Palmarès</a>
               <a href="/compositrices" className="hover:text-rose-800 transition-colors text-rose-600 font-medium">Compositrices</a>
-              <a href="/jokers" className="hover:text-stone-800 transition-colors text-amber-600">Jokers</a>
+              <a href="/jokers" className="hover:text-stone-800 transition-colors text-amber-600 inline-flex items-center gap-1">
+                <img src="/images/joker.png" alt="" className="inline-block w-4 h-4" aria-hidden="true" />
+                Jokers
+              </a>
               <a href="/belgique" className="hover:text-orange-800 transition-colors text-orange-600 font-medium">Belgique</a>
               <a href="/labels" className="hover:text-stone-800 transition-colors">Labels</a>
               <a href="/recherche" className="hover:text-stone-800 transition-colors">Recherche</a>

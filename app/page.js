@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { PrestoButton } from '@/lib/presto'
+import { JokerLogo } from '@/lib/joker-logo'
 
 export const revalidate = 3600
 
@@ -183,8 +184,8 @@ export default async function Home() {
                 key={a.id}
                 className="flex flex-col border border-stone-200 rounded-xl overflow-hidden hover:border-orange-400 hover:shadow-md transition-all relative"
               >
-                <div className="absolute top-2 right-2 z-10 bg-orange-100 border border-orange-300 text-orange-800 text-[10px] font-semibold px-2 py-0.5 rounded uppercase tracking-wider">
-                  ★ Joker
+                <div className="absolute top-2 right-2 z-10 bg-orange-100 border border-orange-300 text-orange-800 text-[10px] font-semibold px-2 py-0.5 rounded uppercase tracking-wider inline-flex items-center gap-1">
+                  <JokerLogo size="sm" /> Joker
                 </div>
                 <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="block">
                   {a.cover_url ? (

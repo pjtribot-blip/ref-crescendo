@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { PrestoButton } from '@/lib/presto'
+import { JokerLogo } from '@/lib/joker-logo'
 
 export const revalidate = 3600
 
@@ -151,8 +152,8 @@ function MillesimeCard({ album }) {
 function JokerCard({ album }) {
   return (
     <article className="flex flex-col border border-stone-200 rounded-lg overflow-hidden hover:border-stone-400 hover:shadow-sm transition-all relative">
-      <div className="absolute top-2 right-2 z-10 bg-orange-100 border border-orange-300 text-orange-800 text-xs font-semibold px-2 py-0.5 rounded">
-        Joker
+      <div className="absolute top-2 right-2 z-10 bg-orange-100 border border-orange-300 text-orange-800 text-xs font-semibold px-2 py-0.5 rounded inline-flex items-center gap-1">
+        <JokerLogo size="sm" /> Joker
       </div>
       <AlbumBody album={album} />
       <AlbumActions album={album} linkClass="text-stone-600 hover:text-stone-900" />

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { PrestoButton } from '@/lib/presto'
+import { JokerLogo } from '@/lib/joker-logo'
 
 export const metadata = {
   title: 'Albums — Référence Crescendo',
@@ -87,7 +88,7 @@ export default async function AlbumsPage({ searchParams }) {
   if (label) activeFilters.push({ key: 'label', label })
   if (periode !== 'all') activeFilters.push({ key: 'periode', label: PERIODES[periode].label })
   if (millesime) activeFilters.push({ key: 'millesime', label: '★ Millésime' })
-  if (joker) activeFilters.push({ key: 'joker', label: '★ Joker' })
+  if (joker) activeFilters.push({ key: 'joker', label: 'Joker uniquement' })
   if (sort !== 'recent') activeFilters.push({ key: 'sort', label: `Tri : ${TRIS[sort].label}` })
 
   const hasActive = activeFilters.length > 0
@@ -212,7 +213,7 @@ export default async function AlbumsPage({ searchParams }) {
               className="rounded border-stone-300 text-orange-600 focus:ring-orange-500"
             />
             <span className="inline-flex items-center gap-1">
-              <span className="text-xs bg-orange-100 border border-orange-300 text-orange-800 px-1.5 py-0.5 rounded font-semibold">★ Joker</span>
+              <span className="text-xs bg-orange-100 border border-orange-300 text-orange-800 px-1.5 py-0.5 rounded font-semibold inline-flex items-center gap-1"><JokerLogo size="sm" /> Joker</span>
               uniquement
             </span>
           </label>
@@ -267,8 +268,8 @@ export default async function AlbumsPage({ searchParams }) {
               </div>
             )}
             {!a.millesime_annee && a.is_joker && (
-              <div className="absolute top-2 right-2 z-10 bg-orange-100 border border-orange-300 text-orange-800 text-[10px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider">
-                ★ Joker
+              <div className="absolute top-2 right-2 z-10 bg-orange-100 border border-orange-300 text-orange-800 text-[10px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider inline-flex items-center gap-1">
+                <JokerLogo size="sm" /> Joker
               </div>
             )}
             <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="block">

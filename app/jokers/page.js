@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { JokerLogo } from '@/lib/joker-logo'
 
 export const metadata = {
   title: 'Jokers — Référence Crescendo',
@@ -41,7 +42,7 @@ export default async function JokersPage() {
                 ) : (
                   <div className="aspect-square bg-stone-100 flex items-center justify-center"><span className="text-stone-300 text-4xl">♪</span></div>
                 )}
-                <div className="absolute top-2 right-2 bg-amber-500 text-white text-xs font-semibold px-2 py-0.5 rounded">JOKER</div>
+                <div className="absolute top-2 right-2 bg-orange-100 border border-orange-300 text-orange-800 text-xs font-semibold px-2 py-0.5 rounded inline-flex items-center gap-1"><JokerLogo size="sm" /> Joker</div>
                 <div className="p-3">
                   <p className="font-medium text-stone-800 text-sm leading-snug line-clamp-2 mb-1">{a.title || a.article_title}</p>
                   <p className="text-xs text-stone-400">{a.label && `${a.label}`}</p>

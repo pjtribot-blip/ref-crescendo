@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
 import { PrestoButton } from '@/lib/presto'
+import { JokerLogo } from '@/lib/joker-logo'
 
 export async function generateMetadata({ params }) {
   const id = (await params).id
@@ -68,7 +69,7 @@ export default async function CompositeurPage({ params }) {
             )}
             {nbJokers > 0 && (
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-orange-100 border border-orange-300 rounded-md text-xs font-medium text-orange-800">
-                ★ {nbJokers} Joker{nbJokers > 1 ? 's' : ''}
+                <JokerLogo size="md" /> {nbJokers} Joker{nbJokers > 1 ? 's' : ''}
               </span>
             )}
             {hasMatrimoine && (
@@ -128,8 +129,8 @@ export default async function CompositeurPage({ params }) {
                       ★ Millésime {a.millesime_annee}
                     </span>
                   ) : a.is_joker ? (
-                    <span className="absolute -top-1 -right-1 bg-orange-100 border border-orange-300 text-orange-800 text-[9px] font-semibold px-1 py-0.5 rounded shadow-sm">
-                      ★ Joker
+                    <span className="absolute -top-1 -right-1 bg-orange-100 border border-orange-300 text-orange-800 text-[9px] font-semibold px-1 py-0.5 rounded shadow-sm inline-flex items-center gap-0.5">
+                      <JokerLogo size="xs" /> Joker
                     </span>
                   ) : null}
                 </a>
