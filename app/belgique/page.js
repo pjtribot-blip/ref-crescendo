@@ -59,12 +59,20 @@ const COMPOSITEURS_BELGES = [
   'Philippe Boesmans',
   'Henri Pousseur',
   'Pierre Bartholomée',
+  'Claude Coppens',
+  'Jacques Leduc',
   'Benoît Mernier',
   'Jean-Luc Fafchamps',
   'Claude Ledoux',
   'Piet Swerts',
   'Annelies Van Parys',
   'Wim Henderickx',
+  'Philippe Rouillon',
+  'Paul Van Laecken',
+  'Alain Craens',
+  'Michel Leclerc',
+  'Robert Groslot',
+  'Jean-Paul Dessy',
 ]
 
 const CHEFS = [
@@ -76,6 +84,12 @@ const CHEFS = [
   'Paul Van Nevel',
   'Ronald Zollman',
   'Georges Octors',
+  'Frank Agsteribbe',
+  'Jean Tubéry',
+  'Herman Engels',
+  'Luc Baiwir',
+  'Patrick Leterme',
+  'David Miller',
 ]
 
 const SOLISTES_PIANISTES = [
@@ -95,6 +109,13 @@ const SOLISTES_PIANISTES = [
   'Charlotte Jacobs',
   'Andreas Frese',
   'Jozef De Beenhouwer',
+  'Plamena Mangova',
+  'Polina Leschenko',
+  'Catherine Mertens',
+  'Jean-Michel Dayez',
+  'Johan Schmidt',
+  'Sophie Hallynck',
+  'Aymeric De Dorlodot',
 ]
 
 const SOLISTES_VIOLONISTES = [
@@ -106,6 +127,9 @@ const SOLISTES_VIOLONISTES = [
   'Ayla Erduran',
   'Mi-Sa Yang',
   'Hrabba Atladottir',
+  'Jean-Frédéric Molard',
+  'Philippe Graffin',
+  'Véronique Bogaerts',
 ]
 
 const SOLISTES_VIOLONCELLISTES = [
@@ -124,6 +148,9 @@ const SOLISTES_VENTS = [
   'Jan De Winne',
   'Barthold Kuijken',
   'Eric Speller',
+  'Baudouin Giaux',
+  'Marc Grauwels',
+  'Brigitte Buxton',
 ]
 
 const SOLISTES_CHANTEURS = [
@@ -141,6 +168,18 @@ const SOLISTES_CHANTEURS = [
   'Patrick Delcour',
   'Jean-Marc Boudreau',
   'Anna Delvaux',
+  'Ludwig Van der Elst',
+  'Pierre Derhet',
+  'Liesbeth Devos',
+  'Julie Mossay',
+  'Camille Merckx',
+  'Véronique Van Mol',
+  'Liesbet Buyse',
+  'Sarah Defrise',
+  'Reinoud Van Mechelen',
+  'François Soons',
+  'Alexandre Beuchat',
+  'Raphaële Kennedy',
 ]
 
 const ORCHESTRES_SYMPHO = [
@@ -170,6 +209,10 @@ const ENSEMBLES_BAROQUE = [
   'Les Muffatti',
   'Ausonia',
   'Scherzi Musicali',
+  'La Fenice',
+  'Ensemble Biscantores',
+  'Kantorij Cantabile',
+  'Arpa Diatonica',
 ]
 
 const ENSEMBLES_VOCAL = [
@@ -191,6 +234,10 @@ const ENSEMBLES_CHAMBRE = [
   'Ensemble Musiques Nouvelles',
   'Revue Blanche',
   'Ensemble Kheops',
+  'Quatuor Tana',
+  'Quatuor Akhtamar',
+  'Quatuor Malibran',
+  'MP4 Quartet',
 ]
 
 const LIEUX = [
@@ -201,6 +248,7 @@ const LIEUX = [
   { name: 'Bozar', url: 'https://www.bozar.be' },
   { name: 'Festival de Wallonie', url: 'https://www.festivaldewallonie.be' },
   { name: 'Klarafestival', url: 'https://www.klarafestival.be' },
+  { name: 'Chapelle Musicale Reine Élisabeth', url: 'https://www.musicchapel.org' },
 ]
 
 const LABELS_BELGES = [
