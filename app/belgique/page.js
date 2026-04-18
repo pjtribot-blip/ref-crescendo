@@ -9,24 +9,50 @@ export const metadata = {
 export const revalidate = 3600
 
 const COMPOSITEURS_BELGES = [
+  'François-Joseph Fétis',
   'Charles-Auguste de Bériot',
   'François-Auguste Gevaert',
   'Peter Benoit',
   'César Franck',
   'Henri Vieuxtemps',
+  'Louis Van Waefelghem',
+  'Joseph Dupont',
+  'Edgar Tinel',
+  'Emile Mathieu',
+  'Jan Blockx',
+  'Sylvain Dupuis',
   'Eugène Ysaÿe',
+  'Paul Lebrun',
+  'August De Boeck',
   'Guillaume Lekeu',
+  'Désiré Pâque',
   'Joseph Ryelandt',
   'Paul Gilson',
   'Joseph Jongen',
+  'Léon Jongen',
   'Jean Rogister',
   'Flor Alpaerts',
   'Marcel Poot',
   'Jean Absil',
   'Raymond Chevreuille',
   'Victor Legley',
+  'Pierre Froidebise',
+  'Marcel Quinet',
   'Frédéric Van Rossum',
   'Jean-Marie Simonis',
+  'Célestin Deliège',
+  'Frederik Devreese',
+  'Daniel Capelletti',
+  'Jean-Pierre Peuvion',
+  'Boudewijn Buckinx',
+  'Godfried-Willem Raes',
+  'Michel Lysight',
+  'Luc Brewaeys',
+  'Luc Van Hove',
+  'Christian Frogneux',
+  'Jan Van Landeghem',
+  'Stéphane Orlando',
+  'Benoît Regibo',
   'Jacqueline Fontyn',
   'André Laporte',
   'Adrien Tsilogiannis',
@@ -64,6 +90,11 @@ const SOLISTES_PIANISTES = [
   'Hans Ryckelynck',
   'Daniel Blumenthal',
   'Thérèse Dussaut',
+  'Frank Braley',
+  'Liebrecht Vanbeckevoort',
+  'Charlotte Jacobs',
+  'Andreas Frese',
+  'Jozef De Beenhouwer',
 ]
 
 const SOLISTES_VIOLONISTES = [
@@ -72,15 +103,27 @@ const SOLISTES_VIOLONISTES = [
   'Hrachya Avanesyan',
   'Marc Bouchkov',
   'Tatiana Samouil',
+  'Ayla Erduran',
+  'Mi-Sa Yang',
+  'Hrabba Atladottir',
 ]
 
 const SOLISTES_VIOLONCELLISTES = [
   'Marie Hallynck',
   'Olivier Marron',
+  'Roel Dieltiens',
+  'Wieland Kuijken',
+  'Didier Poskin',
 ]
 
 const SOLISTES_CLAVECIN_ORGUE = [
   'Bernard Foccroulle',
+]
+
+const SOLISTES_VENTS = [
+  'Jan De Winne',
+  'Barthold Kuijken',
+  'Eric Speller',
 ]
 
 const SOLISTES_CHANTEURS = [
@@ -93,6 +136,11 @@ const SOLISTES_CHANTEURS = [
   'Céline Scheen',
   'Sophie Karthäuser',
   'Jodie Devos',
+  'Marianne Merckx',
+  'Lena Belkina',
+  'Patrick Delcour',
+  'Jean-Marc Boudreau',
+  'Anna Delvaux',
 ]
 
 const ORCHESTRES_SYMPHO = [
@@ -193,6 +241,7 @@ export default async function BelgiquePage() {
         ...SOLISTES_VIOLONISTES,
         ...SOLISTES_VIOLONCELLISTES,
         ...SOLISTES_CLAVECIN_ORGUE,
+        ...SOLISTES_VENTS,
         ...SOLISTES_CHANTEURS,
         ...ORCHESTRES_SYMPHO,
         ...ENSEMBLES_BAROQUE,
@@ -250,8 +299,9 @@ export default async function BelgiquePage() {
   const violonistes = SOLISTES_VIOLONISTES.map(enrichInterp).sort(byAlbumsDesc)
   const violoncellistes = SOLISTES_VIOLONCELLISTES.map(enrichInterp).sort(byAlbumsDesc)
   const clavecinOrgue = SOLISTES_CLAVECIN_ORGUE.map(enrichInterp).sort(byAlbumsDesc)
+  const vents = SOLISTES_VENTS.map(enrichInterp).sort(byAlbumsDesc)
   const chanteurs = SOLISTES_CHANTEURS.map(enrichInterp).sort(byAlbumsDesc)
-  const solistesAll = [...pianistes, ...violonistes, ...violoncellistes, ...clavecinOrgue, ...chanteurs]
+  const solistesAll = [...pianistes, ...violonistes, ...violoncellistes, ...clavecinOrgue, ...vents, ...chanteurs]
   const symphoniques = ORCHESTRES_SYMPHO.map(enrichInterp).sort((a, b) => b.nb_albums - a.nb_albums)
   const baroques = ENSEMBLES_BAROQUE.map(enrichInterp).sort((a, b) => b.nb_albums - a.nb_albums)
   const vocaux = ENSEMBLES_VOCAL.map(enrichInterp).sort((a, b) => b.nb_albums - a.nb_albums)
@@ -325,6 +375,7 @@ export default async function BelgiquePage() {
       <SubSection title="Violonistes" items={violonistes} />
       <SubSection title="Violoncellistes" items={violoncellistes} />
       <SubSection title="Claveciniste / Organiste" items={clavecinOrgue} />
+      <SubSection title="Vents et bois" items={vents} />
       <SubSection title="Chanteurs" items={chanteurs} />
       <div className="mb-16" />
 
