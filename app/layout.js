@@ -19,6 +19,7 @@ export default function RootLayout({ children }) {
               <a href="/compositeurs" className="hover:text-stone-800 transition-colors">Compositeurs</a>
               <a href="/interpretes" className="hover:text-stone-800 transition-colors">Interprètes</a>
               <a href="/albums" className="hover:text-stone-800 transition-colors">Albums</a>
+              <a href="/millesimes" className="hover:text-amber-800 transition-colors text-amber-700 font-medium">Millésimes</a>
               <a href="/jokers" className="hover:text-stone-800 transition-colors text-amber-600">Jokers</a>
               <a href="/labels" className="hover:text-stone-800 transition-colors">Labels</a>
               <a href="/recherche" className="hover:text-stone-800 transition-colors">Recherche</a>
