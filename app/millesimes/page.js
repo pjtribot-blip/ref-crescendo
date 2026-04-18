@@ -53,11 +53,7 @@ export default async function MillesimesIndexPage() {
 
       <div className="space-y-6">
         {editions.map((ed) => (
-          
-            key={ed.annee}
-            href={`/millesimes/${ed.annee}`}
-            className="block bg-white border border-stone-200 rounded-2xl p-8 hover:border-amber-400 hover:shadow-lg transition-all group"
-          >
+          <a key={ed.annee} href={`/millesimes/${ed.annee}`} className="block bg-white border border-stone-200 rounded-2xl p-8 hover:border-amber-400 hover:shadow-lg transition-all group">
             <div className="flex items-start justify-between gap-6">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
@@ -70,19 +66,4 @@ export default async function MillesimesIndexPage() {
                 <p className="text-stone-600">{DESCRIPTIONS[ed.annee] || ''}</p>
               </div>
               <div className="text-stone-300 group-hover:text-amber-600 transition-colors shrink-0">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-              </div>
-            </div>
-          </a>
-        ))}
-      </div>
-
-      <div className="mt-16 p-8 bg-stone-100 rounded-2xl text-center">
-        <h3 className="text-lg font-medium text-stone-900 mb-2">À propos des Millésimes</h3>
-        <p className="text-sm text-stone-600 max-w-2xl mx-auto">
-          Les Millésimes de Crescendo Magazine distinguent chaque année, parmi les centaines de critiques publiées, les enregistrements les plus marquants. Plusieurs catégories : <strong>Enregistrement de l'année</strong>, <strong>Millésime Matrimoine musical</strong> (depuis 2024), <strong>Prix Bernadette Beyne & Michelle Debra</strong> (depuis 2025), et les <strong>Autres Millésimes</strong>.
-        </p>
-      </div>
-    </main>
-  )
-}
+                <svg width="32" height="32" viewBox="0 0 24 24"
