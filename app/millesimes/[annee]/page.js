@@ -34,6 +34,13 @@ const EDITOS = {
       "Pour la troisième année consécutive, les Millésimes s'enrichissent d'un <strong>album de l'année</strong>, une parution qui incarne son temps par son niveau d'exigence et le renouveau qu'elle apporte. Cette année, le prix est décerné à l'enregistrement Liszt par Francesco Piemontesi (Pentatone).",
     ],
   },
+  2022: {
+    sous_titre: "2ᵉ édition",
+    paragraphes: [
+      "Ce cru 2022 fait le bilan d'une année particulièrement dense : <strong>525 critiques</strong> publiées sur Crescendo Magazine, parmi lesquelles la rédaction a distingué quinze parutions essentielles. Le fait le plus saillant est le <strong>renouveau éclatant du label discographique belge</strong>, porté par une génération d'interprètes confirmés : le CPE Bach de <strong>Van Reyn</strong>, un <em>Semele</em> de Haendel signé <strong>Alarcón</strong>, le second volume de l'ensemble <strong>FR2</strong> conduit par <strong>Beets et Van Goethem</strong>, ou encore le pianiste <strong>Julien Libeer</strong>.",
+      "L'année aura aussi été celle de grandes commémorations — <strong>anniversaires Messiaen et Xenakis</strong> — saluées par plusieurs parutions, et d'une dimension patrimoniale assumée : le coffret <strong>Ingrid Haebler</strong>, les archives <strong>Evgueni Svetlanov</strong>, autant de restitutions qui rappellent combien l'exhumation d'enregistrements historiques nourrit encore notre écoute contemporaine.",
+    ],
+  },
 }
 
 const ORDRE_CATEGORIES = ['prix_special', 'enregistrement_annee', 'matrimoine', 'autre']
@@ -61,7 +68,7 @@ async function getAlbumsAnnee(annee) {
 }
 
 export async function generateStaticParams() {
-  return [{ annee: '2023' }, { annee: '2024' }, { annee: '2025' }]
+  return [{ annee: '2022' }, { annee: '2023' }, { annee: '2024' }, { annee: '2025' }]
 }
 
 export default async function MillesimesAnneePage({ params }) {

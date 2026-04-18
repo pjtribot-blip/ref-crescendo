@@ -6,6 +6,10 @@ export const metadata = {
 
 export const revalidate = 3600
 
+const DESCRIPTIONS = {
+  2022: "Deuxième édition. Enregistrement de l'année : les concertos pour trompette de Tomasi, Jolivet, Jolas et Schmitt par Håkan Hardenberger et Fabien Gabel. Riche panorama de 525 critiques, entre redécouvertes patrimoniales (Haebler, Svetlanov) et scène belge (Alarcón, Libeer, FR2).",
+}
+
 async function getEditions() {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -35,7 +39,10 @@ export default async function Page() {
         {editions.map((ed) => (
           <a key={ed.annee} href={"/millesimes/" + ed.annee} className="block bg-white border border-stone-200 rounded-2xl p-8 hover:border-amber-400 hover:shadow-lg transition-all">
             <h2 className="text-3xl font-serif text-stone-900 mb-2">Millésimes {ed.annee}</h2>
-            <p className="text-stone-600">{ed.total} albums primés</p>
+            <p className="text-stone-600 mb-2">{ed.total} albums primés</p>
+            {DESCRIPTIONS[ed.annee] && (
+              <p className="text-stone-500 text-sm leading-relaxed">{DESCRIPTIONS[ed.annee]}</p>
+            )}
           </a>
         ))}
       </div>
