@@ -79,6 +79,7 @@ export default async function AlbumsPage({ searchParams }) {
   const { data: albums, count } = await query
   const totalPages = Math.max(1, Math.ceil((count || 0) / perPage))
 
+  const RESET_VALUES = { q: '', composer: '', label: '', periode: 'all', millesime: '', joker: '', sort: 'recent' }
   const activeFilters = []
   if (q) activeFilters.push({ key: 'q', label: `« ${q} »` })
   if (composer) activeFilters.push({ key: 'composer', label: composer })
@@ -240,10 +241,17 @@ export default async function AlbumsPage({ searchParams }) {
             {count || 0} résultat{count !== 1 ? 's' : ''}
           </span>
           <span className="text-stone-400">·</span>
+          <span className="text-stone-500 text-xs uppercase tracking-wider">Filtres actifs :</span>
           {activeFilters.map(f => (
-            <span key={f.key} className="inline-flex items-center gap-1 px-2 py-0.5 bg-white border border-stone-300 rounded-full text-xs text-stone-700">
-              {f.label}
-            </span>
+            <Link
+              key={f.key}
+              href={buildHref({ [f.key]: RESET_VALUES[f.key] })}
+              className="group inline-flex items-center gap-1.5 pl-2 pr-1 py-0.5 bg-white border border-stone-300 rounded-full text-xs text-stone-700 hover:border-stone-500 hover:bg-stone-50 transition-colors"
+              aria-label={`Retirer le filtre ${f.label}`}
+            >
+              <span>{f.label}</span>
+              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-stone-200 text-stone-600 group-hover:bg-stone-800 group-hover:text-white text-[10px] leading-none" aria-hidden="true">×</span>
+            </Link>
           ))}
         </div>
       )}
