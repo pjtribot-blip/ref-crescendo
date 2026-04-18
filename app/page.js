@@ -261,7 +261,7 @@ export default async function Home() {
 
       <footer className="border-t border-stone-200 pt-8 mt-12 text-center">
         <p className="text-sm text-stone-500 leading-relaxed max-w-3xl mx-auto">
-          <strong className="text-stone-700">Référence Crescendo</strong> — Une émanation de{' '}
+          <strong className="text-stone-700">Phono.Crescendo</strong> — Une émanation de{' '}
           <a
             href="https://www.crescendo-magazine.be"
             target="_blank"
