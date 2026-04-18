@@ -15,23 +15,26 @@ const EDITOS = {
   2025: {
     sous_titre: "5ᵉ édition",
     paragraphes: [
-      "Cette édition 2025 des Millésimes est particulière : en janvier dernier, notre cofondatrice <strong>Michelle Debra (1950-2025)</strong> nous a quittés. Crescendo Magazine avait été fondé en 1993 par Bernadette Beyne (1949-2018) et Michelle Debra, initiative novatrice et visionnaire depuis la Belgique francophone.",
-      "Pour faire perdurer leur esprit pionnier, la rédaction a créé le <strong>Prix Bernadette Beyne et Michelle Debra</strong>, qui récompense une initiative exemplative du dynamisme de la scène musicale. Ce premier prix est décerné à l'enregistrement consacré aux Symphonies n°1 et n°2 d'Elsa Barraine par le WDR Sinfonieorchester sous la direction d'Elena Schwarz.",
-      "L'enregistrement de l'année met en relief le magistral <strong>Coro</strong> de Luciano Berio associé à <strong>Automatones</strong> de Vito Žuraj, qui s'impose comme l'un des grands chefs-d'œuvre des années 2020.",
+      "Cette édition 2025 des Millésimes est particulière : en janvier dernier, notre cofondatrice <strong>Michelle Debra (1950-2025)</strong> nous a quittés. Crescendo Magazine avait été fondé en 1993 par Bernadette Beyne (1949-2018) et Michelle Debra, initiative novatrice et visionnaire depuis la Belgique francophone, qui s'est établi au fil des années une notoriété internationale fondée sur la découverte et le partage.",
+      "Pour faire perdurer leur esprit pionnier et leur passion de la découverte, la rédaction a créé le <strong>Prix Bernadette Beyne et Michelle Debra</strong>, qui récompense une initiative pionnière et exemplative du dynamisme de la scène musicale associée aux plus hautes exigences de qualité et de renouveau. Ce premier prix est décerné à l'enregistrement consacré aux <strong>Symphonies n°1 et n°2 d'Elsa Barraine</strong> par le WDR Sinfonieorchester sous la direction d'Elena Schwarz (CPO), consacrant une artiste magistrale dans le mouvement de redécouverte des compositrices.",
+      "À une époque où la modernité est remise en cause, la sélection met en avant des compositeurs qui ont marqué leur époque par la rupture et l'avant-garde. L'enregistrement de l'année consacre un album qui met en relief le magistral <strong>Coro</strong> de Luciano Berio avec <strong>Automatones</strong> de Vito Žuraj sous la baguette de Sir Simon Rattle, qui s'impose comme l'un des grands chefs-d'œuvre des années 2020. Modernité de rupture également avec deux parutions consacrées à Arnold Schoenberg (Petrenko/Berliner Philharmoniker, Payare/OSM).",
+      "Les Millésimes 2025 accordent aussi une attention au matrimoine musical (Amy Beach), à la découverte de répertoires méconnus (Rózsa, Donizetti, Paris 1801), et à la scène belge avec Ricercar (Colonna/Handel par Alarcón) et Musique en Wallonie (Ysaÿe par l'OPRL).",
     ],
   },
   2024: {
     sous_titre: "4ᵉ édition",
     paragraphes: [
-      "Pour ce cru 2024, la rédaction présente un <strong>nouveau prix consacré à l'art des compositrices</strong> : le Millésime Matrimoine, qui ambitionne de mettre en avant une initiative déclinée en phonographe, livre, partition ou série de concerts. Ce premier Millésime récompense un album CPO consacré à Johanna Senfter par l'Else Ensemble.",
+      "Pour ce cru 2024, la rédaction présente un <strong>nouveau prix</strong> consacré à l'art des compositrices : le <strong>Millésime Matrimoine</strong>, qui ambitionne de mettre en avant une initiative déclinée en phonographe, livre, partition ou série de concerts. Ce premier Millésime récompense un album CPO consacré à <strong>Johanna Senfter</strong> par l'Else Ensemble, une redécouverte importante.",
       "Le Millésime « enregistrement de l'année » récompense le coffret Erato en hommage à l'art de la grande <strong>Catherine Collard</strong>, qui remet enfin à disposition des enregistrements incontournables comme ses gravures dédiées à Robert Schumann.",
+      "La scène belge est représentée par deux parutions majeures de Het Collectief (Messiaen/Murail chez Alpha) et Clematis (David Pohle chez Ricercar). Du côté de la musique de notre temps, un opéra majeur de John Adams (Nonesuch) et les partitions évocatrices de Margaret Brouwer magnifiées par Marin Alsop (Naxos). Cette année 2024 marque aussi les anniversaires Fauré (Piboule) et Smetana (Bychkov avec la Philharmonie tchèque).",
     ],
   },
   2023: {
     sous_titre: "3ᵉ édition",
     paragraphes: [
-      "Entre novembre 2022 et novembre 2023, Crescendo Magazine a publié près de 540 critiques d'enregistrements. Une centaine de Jokers ont été décernés — déclinés en « absolu », « découverte » ou « patrimoine ». Les Millésimes représentent donc le meilleur du meilleur pour la rédaction.",
-      "Pour la troisième année consécutive, les Millésimes s'enrichissent d'un <strong>album de l'année</strong>, une parution qui incarne son temps par son niveau d'exigence et le renouveau qu'elle apporte. Cette année, le prix est décerné à l'enregistrement Liszt par Francesco Piemontesi (Pentatone).",
+      "Entre novembre 2022 et novembre 2023, Crescendo Magazine a publié près de 540 critiques d'enregistrements audio, déclinés en formats physiques, numériques, DVD et Blu-Ray. Une belle centaine de Jokers ont été décernés sur cette période — qu'ils soient « absolus », « découverte » ou « patrimoine ». Les Millésimes représentent donc le meilleur du meilleur pour la rédaction.",
+      "Pour la troisième année consécutive, les Millésimes s'enrichissent d'un <strong>album de l'année</strong>, une parution qui incarne son temps par son niveau d'exigence et le renouveau qu'elle apporte sur la vision des partitions. Cette année, le prix est décerné à l'enregistrement Liszt (Études d'exécution transcendante et Sonate en si mineur) avec <strong>Francesco Piemontesi</strong> chez Pentatone, album d'une grande cohérence éditoriale qui renouvelle l'approche de ces chefs-d'œuvre pianistiques.",
+      "Le panorama 2023 témoigne de la richesse de la scène musicale à commencer par les parutions made in Belgium (Adrien Tsilogiannis chez Cyprès, InAlto chez Ricercar), les claviers (Gasparian chez Naïve, coffret hommage à Nicholas Angelich chez Warner), les redécouvertes patrimoniales (Offenbach par Opera Rara, Schreker sous Eschenbach), et un moment d'émotion avec l'album choral de Kaija Saariaho chez BIS.",
     ],
   },
   2022: {
