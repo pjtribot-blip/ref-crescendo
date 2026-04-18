@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { PrestoButton } from '@/lib/presto'
 
 export const metadata = {
   title: 'La scène musicale belge',
@@ -287,7 +288,7 @@ export default async function BelgiquePage() {
       .select('id, composers, millesime_annee'),
     supabase
       .from('albums')
-      .select('id, title, article_title, label, published_at, critique_url, cover_url, millesime_annee')
+      .select('id, title, article_title, label, published_at, critique_url, cover_url, millesime_annee, composers')
       .in('label', LABELS_BELGES)
       .order('published_at', { ascending: false }),
     supabase
@@ -598,36 +599,41 @@ function LabelSection({ label }) {
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {derniers.map(a => (
-          <a
+          <article
             key={a.id}
-            href={a.critique_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block border border-stone-200 rounded-lg overflow-hidden hover:border-stone-400 hover:shadow-sm transition-all group relative"
+            className="flex flex-col border border-stone-200 rounded-lg overflow-hidden hover:border-stone-400 hover:shadow-sm transition-all group relative"
           >
             {a.millesime_annee && (
               <div className="absolute top-2 right-2 z-10 bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold px-1.5 py-0.5 rounded">
                 ★
               </div>
             )}
-            {a.cover_url ? (
-              <div className="aspect-square bg-stone-100 overflow-hidden">
-                <img src={a.cover_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="block">
+              {a.cover_url ? (
+                <div className="aspect-square bg-stone-100 overflow-hidden">
+                  <img src={a.cover_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                </div>
+              ) : (
+                <div className="aspect-square bg-stone-100 flex items-center justify-center">
+                  <span className="text-stone-300 text-4xl">♪</span>
+                </div>
+              )}
+              <div className="p-3">
+                <p className="font-medium text-stone-800 text-xs leading-snug line-clamp-2 mb-1">
+                  {a.title || a.article_title}
+                </p>
+                <p className="text-xs text-stone-400">
+                  {a.published_at ? new Date(a.published_at).getFullYear() : ''}
+                </p>
               </div>
-            ) : (
-              <div className="aspect-square bg-stone-100 flex items-center justify-center">
-                <span className="text-stone-300 text-4xl">♪</span>
-              </div>
-            )}
-            <div className="p-3">
-              <p className="font-medium text-stone-800 text-xs leading-snug line-clamp-2 mb-1">
-                {a.title || a.article_title}
-              </p>
-              <p className="text-xs text-stone-400">
-                {a.published_at ? new Date(a.published_at).getFullYear() : ''}
-              </p>
+            </a>
+            <div className="flex flex-wrap items-center gap-2 px-3 pb-3 mt-auto">
+              <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="text-xs text-stone-600 hover:text-stone-900 font-medium">
+                Chronique →
+              </a>
+              <PrestoButton title={a.title || a.article_title} composers={a.composers} size="xs" />
             </div>
-          </a>
+          </article>
         ))}
       </div>
     </section>

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { PrestoButton } from '@/lib/presto'
 
 export const metadata = {
   title: 'Albums — Référence Crescendo',
@@ -258,8 +259,8 @@ export default async function AlbumsPage({ searchParams }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
         {albums?.map(a => (
-          <a key={a.id} href={a.critique_url} target="_blank" rel="noopener noreferrer"
-            className="block border border-stone-200 rounded-lg overflow-hidden hover:border-stone-400 hover:shadow-sm transition-all group relative">
+          <article key={a.id}
+            className="flex flex-col border border-stone-200 rounded-lg overflow-hidden hover:border-stone-400 hover:shadow-sm transition-all group relative">
             {a.millesime_annee && (
               <div className="absolute top-2 right-2 z-10 bg-amber-100 border border-amber-300 text-amber-900 text-[10px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider">
                 ★ {a.millesime_label || 'Millésime'}
@@ -270,28 +271,36 @@ export default async function AlbumsPage({ searchParams }) {
                 ★ Joker
               </div>
             )}
-            {a.cover_url ? (
-              <div className="aspect-square bg-stone-100 overflow-hidden">
-                <img src={a.cover_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-              </div>
-            ) : (
-              <div className="aspect-square bg-stone-100 flex items-center justify-center">
-                <span className="text-stone-300 text-4xl">♪</span>
-              </div>
-            )}
-            <div className="p-3">
-              <p className="font-medium text-stone-800 text-sm leading-snug line-clamp-2 mb-1">
-                {a.title || a.article_title}
-              </p>
-              <p className="text-xs text-stone-400">
-                {a.label && `${a.label}`}
-                {a.published_at ? ` · ${new Date(a.published_at).getFullYear()}` : ''}
-              </p>
-              {a.notes?.interprétation && (
-                <p className="text-xs text-stone-500 mt-1">Interprétation : {a.notes.interprétation}/10</p>
+            <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="block">
+              {a.cover_url ? (
+                <div className="aspect-square bg-stone-100 overflow-hidden">
+                  <img src={a.cover_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                </div>
+              ) : (
+                <div className="aspect-square bg-stone-100 flex items-center justify-center">
+                  <span className="text-stone-300 text-4xl">♪</span>
+                </div>
               )}
+              <div className="p-3">
+                <p className="font-medium text-stone-800 text-sm leading-snug line-clamp-2 mb-1">
+                  {a.title || a.article_title}
+                </p>
+                <p className="text-xs text-stone-400">
+                  {a.label && `${a.label}`}
+                  {a.published_at ? ` · ${new Date(a.published_at).getFullYear()}` : ''}
+                </p>
+                {a.notes?.interprétation && (
+                  <p className="text-xs text-stone-500 mt-1">Interprétation : {a.notes.interprétation}/10</p>
+                )}
+              </div>
+            </a>
+            <div className="flex flex-wrap items-center gap-2 px-3 pb-3 mt-auto">
+              <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="text-xs text-stone-600 hover:text-stone-900 font-medium">
+                Lire la chronique →
+              </a>
+              <PrestoButton title={a.title || a.article_title} composers={a.composers} />
             </div>
-          </a>
+          </article>
         ))}
       </div>
 

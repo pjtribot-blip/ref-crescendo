@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { PrestoButton } from '@/lib/presto'
 
 export const revalidate = 3600
 
@@ -99,10 +100,10 @@ export default async function PalmaresAnneePage({ params }) {
   )
 }
 
-function AlbumContent({ album }) {
+function AlbumBody({ album }) {
   const composer = Array.isArray(album.composers) ? (album.composers[0] || '') : (album.composers || '')
   return (
-    <>
+    <a href={album.critique_url} target="_blank" rel="noopener noreferrer" className="block">
       {album.cover_url ? (
         <div className="aspect-square bg-stone-100 overflow-hidden">
           <img src={album.cover_url} alt="" className="w-full h-full object-cover" />
@@ -119,39 +120,42 @@ function AlbumContent({ album }) {
         {composer && <p className="text-xs text-stone-600 line-clamp-1 mb-1">{composer}</p>}
         {album.label && <p className="text-xs text-stone-400 uppercase tracking-wider">{album.label}</p>}
       </div>
-    </>
+    </a>
+  )
+}
+
+function AlbumActions({ album, linkClass }) {
+  return (
+    <div className="flex flex-wrap items-center gap-2 px-3 pb-3 mt-auto">
+      <a href={album.critique_url} target="_blank" rel="noopener noreferrer" className={`text-xs font-medium ${linkClass}`}>
+        Lire la chronique →
+      </a>
+      <PrestoButton title={album.title} composers={album.composers} />
+    </div>
   )
 }
 
 function MillesimeCard({ album }) {
   const badge = album.millesime_label || TITRES_CATEGORIES[album.millesime_categorie] || 'Millésime'
   return (
-    <a
-      href={album.critique_url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block border border-amber-300 bg-amber-50/40 rounded-lg overflow-hidden hover:border-amber-500 hover:shadow-md transition-all relative"
-    >
+    <article className="flex flex-col border border-amber-300 bg-amber-50/40 rounded-lg overflow-hidden hover:border-amber-500 hover:shadow-md transition-all relative">
       <div className="absolute top-2 right-2 z-10 bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold px-2 py-0.5 rounded">
         ★ {badge}
       </div>
-      <AlbumContent album={album} />
-    </a>
+      <AlbumBody album={album} />
+      <AlbumActions album={album} linkClass="text-amber-700 hover:text-amber-900" />
+    </article>
   )
 }
 
 function JokerCard({ album }) {
   return (
-    <a
-      href={album.critique_url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block border border-stone-200 rounded-lg overflow-hidden hover:border-stone-400 hover:shadow-sm transition-all relative"
-    >
+    <article className="flex flex-col border border-stone-200 rounded-lg overflow-hidden hover:border-stone-400 hover:shadow-sm transition-all relative">
       <div className="absolute top-2 right-2 z-10 bg-orange-100 border border-orange-300 text-orange-800 text-xs font-semibold px-2 py-0.5 rounded">
         Joker
       </div>
-      <AlbumContent album={album} />
-    </a>
+      <AlbumBody album={album} />
+      <AlbumActions album={album} linkClass="text-stone-600 hover:text-stone-900" />
+    </article>
   )
 }

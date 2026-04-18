@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { PrestoButton } from '@/lib/presto'
 
 export const revalidate = 3600
 
@@ -108,11 +109,14 @@ function AlbumCard({ album, interpretes }) {
             </p>
           )}
           {album.label && <p className="text-xs text-stone-500 uppercase tracking-wider mb-3">{album.label}</p>}
-          {album.critique_url && (
-            <a href={album.critique_url} target="_blank" rel="noopener noreferrer" className="text-xs text-amber-700 hover:text-amber-900 font-medium">
-              Lire la chronique →
-            </a>
-          )}
+          <div className="flex flex-wrap items-center gap-2">
+            {album.critique_url && (
+              <a href={album.critique_url} target="_blank" rel="noopener noreferrer" className="text-xs text-amber-700 hover:text-amber-900 font-medium">
+                Lire la chronique →
+              </a>
+            )}
+            <PrestoButton title={album.title} composers={album.composers} />
+          </div>
         </div>
       </div>
     </article>

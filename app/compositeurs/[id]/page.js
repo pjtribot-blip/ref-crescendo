@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
+import { PrestoButton } from '@/lib/presto'
 
 export async function generateMetadata({ params }) {
   const id = (await params).id
@@ -110,14 +111,11 @@ export default async function CompositeurPage({ params }) {
           </h2>
           <div className="space-y-3">
             {albumsToDisplay.map(a => (
-              <a
+              <article
                 key={a.id}
-                href={a.critique_url}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="flex gap-3 p-3 border border-stone-200 rounded-lg hover:border-stone-400 transition-all group"
               >
-                <div className="relative shrink-0">
+                <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="relative shrink-0">
                   {a.cover_url ? (
                     <img src={a.cover_url} alt="" className="w-14 h-14 object-cover rounded" />
                   ) : (
@@ -134,17 +132,25 @@ export default async function CompositeurPage({ params }) {
                       ★ Joker
                     </span>
                   ) : null}
-                </div>
+                </a>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-stone-700 group-hover:text-stone-900 truncate">
-                    {a.title || a.article_title}
-                  </p>
-                  <p className="text-xs text-stone-400 mt-0.5">
-                    {a.label && `${a.label} · `}
-                    {a.published_at ? new Date(a.published_at).getFullYear() : ''}
-                  </p>
+                  <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="block">
+                    <p className="text-sm font-medium text-stone-700 group-hover:text-stone-900 truncate">
+                      {a.title || a.article_title}
+                    </p>
+                    <p className="text-xs text-stone-400 mt-0.5">
+                      {a.label && `${a.label} · `}
+                      {a.published_at ? new Date(a.published_at).getFullYear() : ''}
+                    </p>
+                  </a>
+                  <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                    <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="text-xs text-stone-600 hover:text-stone-900 font-medium">
+                      Lire la chronique →
+                    </a>
+                    <PrestoButton title={a.title || a.article_title} composers={[c.name]} />
+                  </div>
                 </div>
-              </a>
+              </article>
             ))}
           </div>
           {albums.length > albumsToDisplay.length && (

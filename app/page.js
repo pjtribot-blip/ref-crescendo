@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { PrestoButton } from '@/lib/presto'
 
 export const revalidate = 3600
 
@@ -178,38 +179,43 @@ export default async function Home() {
           {latestJokers.map(a => {
             const composer = Array.isArray(a.composers) ? (a.composers[0] || '') : (a.composers || '')
             return (
-              <a
+              <article
                 key={a.id}
-                href={a.critique_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block border border-stone-200 rounded-xl overflow-hidden hover:border-orange-400 hover:shadow-md transition-all relative"
+                className="flex flex-col border border-stone-200 rounded-xl overflow-hidden hover:border-orange-400 hover:shadow-md transition-all relative"
               >
                 <div className="absolute top-2 right-2 z-10 bg-orange-100 border border-orange-300 text-orange-800 text-[10px] font-semibold px-2 py-0.5 rounded uppercase tracking-wider">
                   ★ Joker
                 </div>
-                {a.cover_url ? (
-                  <div className="aspect-square bg-stone-100 overflow-hidden">
-                    <img src={a.cover_url} alt="" className="w-full h-full object-cover" />
-                  </div>
-                ) : (
-                  <div className="aspect-square bg-stone-100 flex items-center justify-center">
-                    <span className="text-stone-300 text-4xl">♪</span>
-                  </div>
-                )}
-                <div className="p-4">
-                  <p className="font-medium text-stone-900 text-sm leading-snug line-clamp-2 mb-1">
-                    {a.title}
-                  </p>
-                  {composer && <p className="text-xs text-stone-600 mb-1 line-clamp-1">{composer}</p>}
-                  {a.label && <p className="text-xs text-stone-400 uppercase tracking-wider mb-2">{a.label}</p>}
-                  {a.published_at && (
-                    <p className="text-xs text-stone-500">
-                      {new Date(a.published_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                    </p>
+                <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="block">
+                  {a.cover_url ? (
+                    <div className="aspect-square bg-stone-100 overflow-hidden">
+                      <img src={a.cover_url} alt="" className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="aspect-square bg-stone-100 flex items-center justify-center">
+                      <span className="text-stone-300 text-4xl">♪</span>
+                    </div>
                   )}
+                  <div className="p-4 pb-2">
+                    <p className="font-medium text-stone-900 text-sm leading-snug line-clamp-2 mb-1">
+                      {a.title}
+                    </p>
+                    {composer && <p className="text-xs text-stone-600 mb-1 line-clamp-1">{composer}</p>}
+                    {a.label && <p className="text-xs text-stone-400 uppercase tracking-wider mb-2">{a.label}</p>}
+                    {a.published_at && (
+                      <p className="text-xs text-stone-500">
+                        {new Date(a.published_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </p>
+                    )}
+                  </div>
+                </a>
+                <div className="flex flex-wrap items-center gap-2 px-4 pb-4 mt-auto">
+                  <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="text-xs text-orange-700 hover:text-orange-900 font-medium">
+                    Lire la chronique →
+                  </a>
+                  <PrestoButton title={a.title} composers={a.composers} />
                 </div>
-              </a>
+              </article>
             )
           })}
         </div>
