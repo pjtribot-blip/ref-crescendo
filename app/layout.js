@@ -1,8 +1,8 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'Référence Crescendo — Musique classique',
-  description: 'La référence en musique classique : compositeurs, discographie, critiques.',
+  title: 'Phono.Crescendo — Base de données critiques phonographiques',
+  description: "Base de données des critiques phonographiques de Crescendo Magazine : 5190 albums, 608 compositeurs, 68 Millésimes, 32 ans d'édition critique depuis 1993",
 }
 
 export default function RootLayout({ children }) {

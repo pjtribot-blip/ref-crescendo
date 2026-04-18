@@ -103,10 +103,9 @@ export default async function Home() {
     <main className="max-w-5xl mx-auto px-4 py-12">
       <section className="mb-20">
         <div className="text-center mb-10">
-          <h1 className="text-5xl sm:text-6xl font-serif text-stone-900 mb-4">Référence Crescendo</h1>
+          <h1 className="text-5xl sm:text-6xl font-serif text-stone-900 mb-4">Phono.Crescendo</h1>
           <p className="text-lg text-stone-600 max-w-2xl mx-auto leading-relaxed">
-            La base de données de référence de la musique classique —{' '}
-            <span className="text-stone-800 font-medium">32 ans d&apos;édition critique depuis 1993</span>
+            La base de données des critiques phonographiques de Crescendo-Magazine.be
           </p>
         </div>
 
