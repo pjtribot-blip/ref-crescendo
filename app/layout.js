@@ -26,6 +26,7 @@ export default function RootLayout({ children }) {
               <a href="/belgique" className="hover:text-orange-800 transition-colors text-orange-600 font-medium">Belgique</a>
               <a href="/labels" className="hover:text-stone-800 transition-colors">Labels</a>
               <a href="/recherche" className="hover:text-stone-800 transition-colors">Recherche</a>
+              <a href="/statistiques" className="hover:text-stone-800 transition-colors">Chiffres</a>
               <a href="https://www.crescendo-magazine.be" target="_blank" rel="noopener noreferrer" className="hover:text-stone-800 transition-colors">Magazine →</a>
             </div>
           </div>
