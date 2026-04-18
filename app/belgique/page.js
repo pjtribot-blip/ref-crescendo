@@ -391,7 +391,13 @@ export default async function BelgiquePage() {
             <strong>Crescendo Magazine</strong> porte cette scène depuis la <strong>Belgique francophone</strong>,
             en qualité de média indépendant au rayonnement international. Cette page rassemble, en un point unique,
             les compositeurs, interprètes, ensembles, institutions et labels qui font vivre la musique classique en
-            Belgique — chacun relié aux critiques et dossiers publiés par la rédaction.
+            Belgique.
+          </p>
+          <p className="text-sm italic text-stone-500">
+            Cette sélection ne se limite pas aux artistes de nationalité belge : elle rassemble toutes les
+            personnalités et institutions qui contribuent durablement à la vie musicale du pays, qu&apos;ils y
+            soient nés, y enseignent, y dirigent des ensembles ou y poursuivent l&apos;essentiel de leur carrière.
+            Un ancrage belge plus qu&apos;un passeport.
           </p>
         </div>
       </header>
