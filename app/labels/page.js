@@ -9,23 +9,25 @@ export const metadata = {
 export default async function LabelsPage() {
   const { data } = await supabase
     .from('albums')
-    .select('label')
+    .select('label, millesime_annee')
     .not('label', 'is', null)
     .neq('label', '')
 
-  // Compte les albums par label
-  const counts = {}
+  // Compte les albums et Millésimes par label
+  const stats = {}
   for (const row of data || []) {
     const l = row.label?.trim()
     if (l && l.length > 1 && l.length < 50) {
-      counts[l] = (counts[l] || 0) + 1
+      if (!stats[l]) stats[l] = { count: 0, millesimes: 0 }
+      stats[l].count++
+      if (row.millesime_annee) stats[l].millesimes++
     }
   }
 
   // Trie par nombre d'albums décroissant
-  const labels = Object.entries(counts)
-    .sort((a, b) => b[1] - a[1])
-    .filter(([, count]) => count >= 2)
+  const labels = Object.entries(stats)
+    .filter(([, s]) => s.count >= 2)
+    .sort((a, b) => b[1].count - a[1].count)
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">
@@ -33,16 +35,28 @@ export default async function LabelsPage() {
       <p className="text-stone-500 mb-8">{labels.length} labels · Référence Crescendo Magazine</p>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-        {labels.map(([label, count]) => (
-          <Link
-            key={label}
-            href={`/albums?label=${encodeURIComponent(label)}`}
-            className="block p-4 border border-stone-200 rounded-lg hover:border-stone-400 hover:shadow-sm transition-all"
-          >
-            <p className="font-medium text-stone-800 text-sm leading-snug mb-1">{label}</p>
-            <p className="text-xs text-stone-400">{count} critique{count > 1 ? 's' : ''}</p>
-          </Link>
-        ))}
+        {labels.map(([label, s]) => {
+          const hasMillesime = s.millesimes > 0
+          return (
+            <Link
+              key={label}
+              href={`/albums?label=${encodeURIComponent(label)}`}
+              className={`block p-4 border rounded-lg hover:shadow-sm transition-all ${
+                hasMillesime
+                  ? 'border-amber-300 bg-amber-50 hover:border-amber-500'
+                  : 'border-stone-200 hover:border-stone-400'
+              }`}
+            >
+              <p className="font-medium text-stone-800 text-sm leading-snug mb-1">{label}</p>
+              <p className="text-xs text-stone-400">{s.count} critique{s.count > 1 ? 's' : ''}</p>
+              {hasMillesime && (
+                <span className="mt-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-semibold bg-amber-100 border border-amber-300 text-amber-900">
+                  ★ {s.millesimes} Millésime{s.millesimes > 1 ? 's' : ''}
+                </span>
+              )}
+            </Link>
+          )
+        })}
       </div>
     </main>
   )
