@@ -5,9 +5,13 @@ export const revalidate = 3600
 
 export async function generateMetadata({ params }) {
   const { annee } = await params
+  const title = `Millésimes ${annee}`
+  const description = `Les Millésimes ${annee} de Crescendo Magazine : les enregistrements primés par la rédaction, toutes catégories confondues.`
   return {
-    title: `Millésimes ${annee} — Référence Crescendo`,
-    description: `Les Millésimes ${annee} de Crescendo Magazine : les enregistrements primés par la rédaction.`,
+    title,
+    description,
+    openGraph: { type: 'article', title: `${title} — Phono.Crescendo`, description },
+    twitter: { card: 'summary_large_image', title: `${title} — Phono.Crescendo`, description },
   }
 }
 

@@ -4,6 +4,16 @@ import { supabase } from '@/lib/supabase'
 export const metadata = {
   title: 'Compositrices — Le Matrimoine Crescendo',
   description: 'Les compositrices chroniquées par Crescendo Magazine — le Matrimoine musical, de Hildegard von Bingen aux créatrices contemporaines.',
+  openGraph: {
+    type: 'website',
+    title: 'Compositrices — Le Matrimoine Crescendo',
+    description: 'Neuf siècles de création musicale féminine, mises en lumière par Crescendo Magazine.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Compositrices — Le Matrimoine Crescendo',
+    description: 'Neuf siècles de création musicale féminine, mises en lumière par Crescendo Magazine.',
+  },
 }
 
 export const revalidate = 3600

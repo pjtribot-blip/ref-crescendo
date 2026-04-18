@@ -2,8 +2,18 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
 export const metadata = {
-  title: 'La scène musicale belge — Référence Crescendo',
-  description: 'La vitrine de la scène musicale belge sur Crescendo Magazine : compositeurs, chefs, solistes, ensembles, orchestres, festivals et labels.',
+  title: 'La scène musicale belge',
+  description: 'Compositeurs, interprètes, ensembles, orchestres, labels : la vitrine complète de la scène musicale belge recensée par Crescendo Magazine.',
+  openGraph: {
+    type: 'website',
+    title: 'La scène musicale belge — Phono.Crescendo',
+    description: 'Compositeurs, interprètes, ensembles, orchestres, labels : la vitrine complète de la scène musicale belge.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'La scène musicale belge — Phono.Crescendo',
+    description: 'La vitrine complète de la scène musicale belge recensée par Crescendo Magazine.',
+  },
 }
 
 export const revalidate = 3600

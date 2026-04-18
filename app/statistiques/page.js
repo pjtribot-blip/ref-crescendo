@@ -2,8 +2,18 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
 export const metadata = {
-  title: 'Crescendo en chiffres — Référence Crescendo',
+  title: 'En chiffres',
   description: "Crescendo Magazine en données : 32 ans d'édition critique en musique classique, compositeurs, labels, Millésimes et Jokers.",
+  openGraph: {
+    type: 'website',
+    title: 'Phono.Crescendo en chiffres',
+    description: "32 ans d'édition critique en musique classique, un paysage en données.",
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Phono.Crescendo en chiffres',
+    description: "32 ans d'édition critique en musique classique, un paysage en données.",
+  },
 }
 
 export const revalidate = 3600

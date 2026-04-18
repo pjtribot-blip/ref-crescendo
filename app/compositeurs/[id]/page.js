@@ -6,7 +6,14 @@ export async function generateMetadata({ params }) {
   const id = (await params).id
   const { data: c } = await supabase.from('compositeurs').select('name, description').eq('id', id).single()
   if (!c) return {}
-  return { title: `${c.name} — Référence Crescendo`, description: c.description?.slice(0, 160) }
+  const title = c.name
+  const description = (c.description?.slice(0, 155) || `${c.name} — fiche compositeur sur la base de données critique de Crescendo Magazine.`).trim()
+  return {
+    title,
+    description,
+    openGraph: { type: 'profile', title: `${c.name} — Phono.Crescendo`, description },
+    twitter: { card: 'summary_large_image', title: `${c.name} — Phono.Crescendo`, description },
+  }
 }
 
 export default async function CompositeurPage({ params }) {
