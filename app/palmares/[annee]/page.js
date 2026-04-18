@@ -100,7 +100,7 @@ export default async function PalmaresAnneePage({ params }) {
 }
 
 function AlbumContent({ album }) {
-  const composer = Array.isArray(album.composers) ? album.composers.join(', ') : (album.composers || '')
+  const composer = Array.isArray(album.composers) ? (album.composers[0] || '') : (album.composers || '')
   return (
     <>
       {album.cover_url ? (
