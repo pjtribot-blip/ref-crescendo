@@ -9,13 +9,24 @@ export const metadata = {
 export const revalidate = 3600
 
 const COMPOSITEURS_BELGES = [
+  'Charles-Auguste de Bériot',
+  'François-Auguste Gevaert',
+  'Peter Benoit',
   'César Franck',
   'Henri Vieuxtemps',
   'Eugène Ysaÿe',
   'Guillaume Lekeu',
-  'Jean Absil',
-  'Joseph Jongen',
+  'Joseph Ryelandt',
   'Paul Gilson',
+  'Joseph Jongen',
+  'Jean Rogister',
+  'Flor Alpaerts',
+  'Marcel Poot',
+  'Jean Absil',
+  'Raymond Chevreuille',
+  'Victor Legley',
+  'Frédéric Van Rossum',
+  'Jean-Marie Simonis',
   'Jacqueline Fontyn',
   'André Laporte',
   'Adrien Tsilogiannis',
@@ -37,19 +48,51 @@ const CHEFS = [
   'Jos van Immerseel',
   'Sigiswald Kuijken',
   'Paul Van Nevel',
+  'Ronald Zollman',
+  'Georges Octors',
 ]
 
-const SOLISTES = [
+const SOLISTES_PIANISTES = [
   'Julien Libeer',
-  'Céline Scheen',
-  'Sophie Karthäuser',
-  'Jodie Devos',
-  'Lorenzo Gatto',
-  'Lionel Meunier',
   'Apolline Jesupret',
   'Eliane Reyes',
   'Florian Noack',
   'Stéphane Ginsburgh',
+  'Jean-Claude Vanden Eynden',
+  'Muhiddin Dürrüoglu',
+  'Boyan Vodenitcharov',
+  'Hans Ryckelynck',
+  'Daniel Blumenthal',
+  'Thérèse Dussaut',
+]
+
+const SOLISTES_VIOLONISTES = [
+  'Lorenzo Gatto',
+  'Yossif Ivanov',
+  'Hrachya Avanesyan',
+  'Marc Bouchkov',
+  'Tatiana Samouil',
+]
+
+const SOLISTES_VIOLONCELLISTES = [
+  'Marie Hallynck',
+  'Olivier Marron',
+]
+
+const SOLISTES_CLAVECIN_ORGUE = [
+  'Bernard Foccroulle',
+]
+
+const SOLISTES_CHANTEURS = [
+  'José Van Dam',
+  'Werner Van Mechelen',
+  'Stephan Genz',
+  'Thomas Blondelle',
+  'Jean-François Rouchon',
+  'Lionel Meunier',
+  'Céline Scheen',
+  'Sophie Karthäuser',
+  'Jodie Devos',
 ]
 
 const ORCHESTRES_SYMPHO = [
@@ -146,7 +189,11 @@ export default async function BelgiquePage() {
       .select('name, nb_albums, album_ids')
       .in('name', [
         ...CHEFS,
-        ...SOLISTES,
+        ...SOLISTES_PIANISTES,
+        ...SOLISTES_VIOLONISTES,
+        ...SOLISTES_VIOLONCELLISTES,
+        ...SOLISTES_CLAVECIN_ORGUE,
+        ...SOLISTES_CHANTEURS,
         ...ORCHESTRES_SYMPHO,
         ...ENSEMBLES_BAROQUE,
         ...ENSEMBLES_VOCAL,
@@ -197,8 +244,14 @@ export default async function BelgiquePage() {
 
   const compositeurs = COMPOSITEURS_BELGES.map(enrichComp)
     .sort((a, b) => (a.born ?? 9999) - (b.born ?? 9999))
-  const chefs = CHEFS.map(enrichInterp).sort((a, b) => b.nb_albums - a.nb_albums)
-  const solistes = SOLISTES.map(enrichInterp).sort((a, b) => b.nb_albums - a.nb_albums)
+  const byAlbumsDesc = (a, b) => b.nb_albums - a.nb_albums
+  const chefs = CHEFS.map(enrichInterp).sort(byAlbumsDesc)
+  const pianistes = SOLISTES_PIANISTES.map(enrichInterp).sort(byAlbumsDesc)
+  const violonistes = SOLISTES_VIOLONISTES.map(enrichInterp).sort(byAlbumsDesc)
+  const violoncellistes = SOLISTES_VIOLONCELLISTES.map(enrichInterp).sort(byAlbumsDesc)
+  const clavecinOrgue = SOLISTES_CLAVECIN_ORGUE.map(enrichInterp).sort(byAlbumsDesc)
+  const chanteurs = SOLISTES_CHANTEURS.map(enrichInterp).sort(byAlbumsDesc)
+  const solistesAll = [...pianistes, ...violonistes, ...violoncellistes, ...clavecinOrgue, ...chanteurs]
   const symphoniques = ORCHESTRES_SYMPHO.map(enrichInterp).sort((a, b) => b.nb_albums - a.nb_albums)
   const baroques = ENSEMBLES_BAROQUE.map(enrichInterp).sort((a, b) => b.nb_albums - a.nb_albums)
   const vocaux = ENSEMBLES_VOCAL.map(enrichInterp).sort((a, b) => b.nb_albums - a.nb_albums)
@@ -267,10 +320,13 @@ export default async function BelgiquePage() {
         {chefs.map(i => <InterpreteCard key={i.name} i={i} />)}
       </div>
 
-      <SectionHeader id="solistes" title="Solistes" count={solistes.filter(x => x.present).length} total={solistes.length} />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-16">
-        {solistes.map(i => <InterpreteCard key={i.name} i={i} />)}
-      </div>
+      <SectionHeader id="solistes" title="Solistes" count={solistesAll.filter(x => x.present).length} total={solistesAll.length} />
+      <SubSection title="Pianistes" items={pianistes} />
+      <SubSection title="Violonistes" items={violonistes} />
+      <SubSection title="Violoncellistes" items={violoncellistes} />
+      <SubSection title="Claveciniste / Organiste" items={clavecinOrgue} />
+      <SubSection title="Chanteurs" items={chanteurs} />
+      <div className="mb-16" />
 
       <SectionHeader id="ensembles" title="Orchestres et ensembles" />
       <SubSection title="Orchestres symphoniques" items={symphoniques} />
