@@ -124,9 +124,9 @@ export default async function StatistiquesPage() {
   return (
     <main className="max-w-5xl mx-auto px-4 py-12">
       <header className="mb-12 text-center">
-        <h1 className="text-5xl font-serif text-stone-900 mb-4">Crescendo en chiffres</h1>
+        <h1 className="text-5xl font-serif text-stone-900 mb-4">Phono.Crescendo</h1>
         <p className="text-lg text-stone-600 max-w-2xl mx-auto leading-relaxed">
-          32 ans d&apos;édition critique en musique classique, un paysage en données.
+          Les chiffres et les statistiques
         </p>
       </header>
 
