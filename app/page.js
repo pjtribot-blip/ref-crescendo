@@ -7,6 +7,17 @@ export const revalidate = 3600
 
 const ANNEES_MILLESIMES = [2021, 2022, 2023, 2024, 2025]
 
+// Labels à ne pas afficher sur la page d'accueil (groupes corporate, enseignes
+// non-discographiques, etc.). Exclus du compteur « Labels » et masqués sur les
+// cartes album.
+const EXCLUDED_LABELS = new Set([
+  'Outhere',
+])
+
+function visibleLabel(label) {
+  return label && !EXCLUDED_LABELS.has(label) ? label : null
+}
+
 const EXPLORER = [
   {
     href: '/compositeurs',
@@ -89,7 +100,11 @@ export default async function Home() {
   const nbCompositeurs = compositeursCountRes.count || 0
   const nbMillesimes = millesimesCountRes.count || 0
   const nbJokers = jokersCountRes.count || 0
-  const nbLabels = new Set((labelsRes.data || []).map(a => a.label).filter(Boolean)).size
+  const nbLabels = new Set(
+    (labelsRes.data || [])
+      .map(a => a.label)
+      .filter(l => l && !EXCLUDED_LABELS.has(l))
+  ).size
 
   const parAnnee = {}
   for (const row of millesimesByYearRes.data || []) {
@@ -179,6 +194,7 @@ export default async function Home() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {latestJokers.map(a => {
             const composer = Array.isArray(a.composers) ? (a.composers[0] || '') : (a.composers || '')
+            const label = visibleLabel(a.label)
             return (
               <article
                 key={a.id}
@@ -202,7 +218,7 @@ export default async function Home() {
                       {a.title}
                     </p>
                     {composer && <p className="text-xs text-stone-600 mb-1 line-clamp-1">{composer}</p>}
-                    {a.label && <p className="text-xs text-stone-400 uppercase tracking-wider mb-2">{a.label}</p>}
+                    {label && <p className="text-xs text-stone-400 uppercase tracking-wider mb-2">{label}</p>}
                     {a.published_at && (
                       <p className="text-xs text-stone-500">
                         {new Date(a.published_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -235,34 +251,37 @@ export default async function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {latestAlbums.map(a => (
-            <a
-              key={a.id}
-              href={a.critique_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block border border-stone-200 rounded-lg overflow-hidden hover:border-stone-400 hover:shadow-sm transition-all group"
-            >
-              {a.cover_url ? (
-                <div className="aspect-square bg-stone-100 overflow-hidden">
-                  <img src={a.cover_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          {latestAlbums.map(a => {
+            const label = visibleLabel(a.label)
+            return (
+              <a
+                key={a.id}
+                href={a.critique_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block border border-stone-200 rounded-lg overflow-hidden hover:border-stone-400 hover:shadow-sm transition-all group"
+              >
+                {a.cover_url ? (
+                  <div className="aspect-square bg-stone-100 overflow-hidden">
+                    <img src={a.cover_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </div>
+                ) : (
+                  <div className="aspect-square bg-stone-100 flex items-center justify-center">
+                    <span className="text-stone-300 text-4xl">♪</span>
+                  </div>
+                )}
+                <div className="p-3">
+                  <p className="font-medium text-stone-800 text-xs leading-snug line-clamp-2 mb-1">
+                    {a.title || a.article_title}
+                  </p>
+                  <p className="text-xs text-stone-400">
+                    {label && <span className="block truncate">{label}</span>}
+                    {a.published_at ? new Date(a.published_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
+                  </p>
                 </div>
-              ) : (
-                <div className="aspect-square bg-stone-100 flex items-center justify-center">
-                  <span className="text-stone-300 text-4xl">♪</span>
-                </div>
-              )}
-              <div className="p-3">
-                <p className="font-medium text-stone-800 text-xs leading-snug line-clamp-2 mb-1">
-                  {a.title || a.article_title}
-                </p>
-                <p className="text-xs text-stone-400">
-                  {a.label && <span className="block truncate">{a.label}</span>}
-                  {a.published_at ? new Date(a.published_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
-                </p>
-              </div>
-            </a>
-          ))}
+              </a>
+            )
+          })}
         </div>
       </section>
 
