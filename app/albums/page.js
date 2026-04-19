@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { PrestoButton } from '@/lib/presto'
 import { JokerLogo } from '@/lib/joker-logo'
+import HideUnlabeledToggle from '@/app/_components/HideUnlabeledToggle'
 
 export const metadata = {
   title: 'Albums — Référence Crescendo',
@@ -34,6 +35,7 @@ export default async function AlbumsPage({ searchParams }) {
   const millesime = params?.millesime === '1'
   const joker = params?.joker === '1'
   const sort = params?.sort && TRIS[params.sort] ? params.sort : 'recent'
+  const hide = params?.hide !== '0'   // défaut activé ; désactivé seulement si hide=0 explicite
   const page = Math.max(1, parseInt(params?.page || '1'))
   const perPage = 24
   const from = (page - 1) * perPage
@@ -74,6 +76,7 @@ export default async function AlbumsPage({ searchParams }) {
   if (periodeConfig.lte) query = query.lte('published_at', periodeConfig.lte)
   if (millesime) query = query.not('millesime_annee', 'is', null)
   if (joker) query = query.eq('is_joker', true)
+  if (hide) query = query.not('label', 'is', null).neq('label', '')
 
   const tri = TRIS[sort]
   query = query.order(tri.column, { ascending: tri.asc, nullsFirst: false }).range(from, to)
@@ -95,7 +98,17 @@ export default async function AlbumsPage({ searchParams }) {
 
   const buildHref = (overrides = {}) => {
     const qs = new URLSearchParams()
-    const merged = { q, composer, label, periode, millesime: millesime ? '1' : '', joker: joker ? '1' : '', sort, ...overrides }
+    const merged = {
+      q,
+      composer,
+      label,
+      periode,
+      millesime: millesime ? '1' : '',
+      joker: joker ? '1' : '',
+      sort,
+      hide: hide ? '' : '0',   // '' quand défaut (activé), '0' quand désactivé
+      ...overrides,
+    }
     for (const [k, v] of Object.entries(merged)) {
       if (v && !(k === 'periode' && v === 'all') && !(k === 'sort' && v === 'recent')) qs.set(k, String(v))
     }
@@ -227,7 +240,7 @@ export default async function AlbumsPage({ searchParams }) {
             </button>
             {hasActive && (
               <Link
-                href="/albums"
+                href={hide ? '/albums' : '/albums?hide=0'}
                 className="px-4 py-1.5 border border-stone-300 rounded text-sm text-stone-600 hover:border-stone-500 transition-colors"
               >
                 Réinitialiser
@@ -257,6 +270,10 @@ export default async function AlbumsPage({ searchParams }) {
           ))}
         </div>
       )}
+
+      <div className="mb-5">
+        <HideUnlabeledToggle hide={hide} count={count || 0} />
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
         {albums?.map(a => (

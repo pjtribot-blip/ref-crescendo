@@ -1,26 +1,31 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import HideUnlabeledToggle from '@/app/_components/HideUnlabeledToggle'
 
 export const metadata = { title: 'Recherche — Référence Crescendo' }
 
 export default async function RecherchePage({ searchParams }) {
   const params = await searchParams
   const q = params?.q || ''
+  const hide = params?.hide !== '0'   // défaut activé ; désactivé seulement si hide=0 explicite
   let compositeurs = [], albums = []
 
   if (q.length >= 2) {
+    let albumsQuery = supabase
+      .from('albums')
+      .select('id, title, article_title, label, published_at, critique_url, cover_url')
+      .or(`title.ilike.%${q}%,article_title.ilike.%${q}%,label.ilike.%${q}%,header_raw.ilike.%${q}%`)
+      .order('published_at', { ascending: false })
+      .limit(50)
+    if (hide) albumsQuery = albumsQuery.not('label', 'is', null).neq('label', '')
+
     const [{ data: comps }, { data: albs }] = await Promise.all([
       supabase
         .from('compositeurs')
         .select('id, name, period, born, died, familiarity')
         .ilike('name', `%${q}%`)
         .limit(50),
-      supabase
-        .from('albums')
-        .select('id, title, article_title, label, published_at, critique_url, cover_url')
-        .or(`title.ilike.%${q}%,article_title.ilike.%${q}%,label.ilike.%${q}%,header_raw.ilike.%${q}%`)
-        .order('published_at', { ascending: false })
-        .limit(50),
+      albumsQuery,
     ])
     compositeurs = comps || []
     albums = albs || []
@@ -35,6 +40,11 @@ export default async function RecherchePage({ searchParams }) {
           <button type="submit" className="px-6 py-3 bg-stone-800 text-white rounded-lg hover:bg-stone-700 transition-colors">Rechercher</button>
         </div>
       </form>
+      {q.length >= 2 && (
+        <div className="mb-6">
+          <HideUnlabeledToggle hide={hide} count={albums.length} />
+        </div>
+      )}
       {q.length >= 2 && (
         <div className="space-y-10">
           {compositeurs.length > 0 && (
