@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { LABELS_BELGES } from '@/lib/labels-belges'
 
 export const metadata = {
   title: 'En chiffres',
@@ -29,12 +30,6 @@ const ORDRE_PERIODES = [
   'Post-romantique',
   'Moderne',
   'Contemporaine',
-]
-
-const LABELS_BELGES = [
-  'Ricercar', 'Cyprès', 'Musique en Wallonie', 'Ramée', 'Pavane',
-  'Fuga Libera', 'Outhere', "Et'cetera", 'Flora', 'Passacaille',
-  'Phaedra', 'Evil Penguin Records',
 ]
 
 const COMPOSITRICES = [

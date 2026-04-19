@@ -1,16 +1,11 @@
 import { ImageResponse } from 'next/og'
 import { supabase } from '@/lib/supabase'
+import { LABELS_BELGES } from '@/lib/labels-belges'
 
 export const runtime = 'nodejs'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 export const alt = 'La scène musicale belge — Phono.Crescendo'
-
-const LABELS_BELGES = [
-  'Ricercar', 'Cyprès', 'Musique en Wallonie', 'Ramée', 'Pavane',
-  'Fuga Libera', 'Outhere', "Et'cetera", 'Flora', 'Passacaille',
-  'Phaedra', 'Evil Penguin Records',
-]
 
 export default async function Image() {
   const { data: albums } = await supabase

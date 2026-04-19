@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { PrestoButton } from '@/lib/presto'
+import { LABELS_BELGES } from '@/lib/labels-belges'
 
 export const metadata = {
   title: 'La scène musicale belge',
@@ -260,21 +261,6 @@ const LIEUX = [
   { name: 'Festival de Wallonie', url: 'https://www.festivaldewallonie.be' },
   { name: 'Klarafestival', url: 'https://www.klarafestival.be' },
   { name: 'Chapelle Musicale Reine Élisabeth', url: 'https://www.musicchapel.org' },
-]
-
-const LABELS_BELGES = [
-  'Ricercar',
-  'Cyprès',
-  'Musique en Wallonie',
-  'Ramée',
-  'Pavane',
-  'Fuga Libera',
-  'Outhere',
-  "Et'cetera",
-  'Flora',
-  'Passacaille',
-  'Phaedra',
-  'Evil Penguin Records',
 ]
 
 export default async function BelgiquePage() {
