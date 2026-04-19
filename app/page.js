@@ -2,17 +2,17 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { PrestoButton } from '@/lib/presto'
 import { JokerLogo } from '@/lib/joker-logo'
+import { EXCLUDED_LABELS } from '@/lib/excluded-labels'
+import {
+  getAlbumsCount,
+  getCompositeursCount,
+  getMillesimesCount,
+  getJokersCount,
+} from '@/lib/stats-counts'
 
 export const revalidate = 3600
 
 const ANNEES_MILLESIMES = [2021, 2022, 2023, 2024, 2025]
-
-// Labels à ne pas afficher sur la page d'accueil (groupes corporate, enseignes
-// non-discographiques, etc.). Exclus du compteur « Labels » et masqués sur les
-// cartes album.
-const EXCLUDED_LABELS = new Set([
-  'Outhere',
-])
 
 function visibleLabel(label) {
   return label && !EXCLUDED_LABELS.has(label) ? label : null
@@ -66,19 +66,19 @@ const EXPLORER_TONES = {
 
 export default async function Home() {
   const [
-    albumsCountRes,
-    compositeursCountRes,
-    millesimesCountRes,
-    jokersCountRes,
+    nbAlbums,
+    nbCompositeurs,
+    nbMillesimes,
+    nbJokers,
     labelsRes,
     millesimesByYearRes,
     latestAlbumsRes,
     latestJokersRes,
   ] = await Promise.all([
-    supabase.from('albums').select('*', { count: 'exact', head: true }),
-    supabase.from('compositeurs').select('*', { count: 'exact', head: true }),
-    supabase.from('albums').select('*', { count: 'exact', head: true }).not('millesime_annee', 'is', null),
-    supabase.from('albums').select('*', { count: 'exact', head: true }).eq('is_joker', true),
+    getAlbumsCount(),
+    getCompositeursCount(),
+    getMillesimesCount(),
+    getJokersCount(),
     supabase.from('albums').select('label').not('label', 'is', null),
     supabase.from('albums').select('millesime_annee').not('millesime_annee', 'is', null),
     supabase
@@ -96,10 +96,6 @@ export default async function Home() {
       .limit(6),
   ])
 
-  const nbAlbums = albumsCountRes.count || 0
-  const nbCompositeurs = compositeursCountRes.count || 0
-  const nbMillesimes = millesimesCountRes.count || 0
-  const nbJokers = jokersCountRes.count || 0
   const nbLabels = new Set(
     (labelsRes.data || [])
       .map(a => a.label)

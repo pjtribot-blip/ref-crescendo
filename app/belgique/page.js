@@ -2,11 +2,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { PrestoButton } from '@/lib/presto'
 import { LABELS_BELGES } from '@/lib/labels-belges'
-
-// Labels à ne pas rendre comme bloc sur la page (holdings corporate, pas de
-// catalogue propre). Outhere est la holding qui chapeaute Ricercar / Alpha /
-// Ramée / Fuga Libera — ces vrais catalogues sont déjà listés séparément.
-const EXCLUDED_LABELS = new Set(['Outhere'])
+import { EXCLUDED_LABELS } from '@/lib/excluded-labels'
 
 export const metadata = {
   title: 'La scène musicale belge',

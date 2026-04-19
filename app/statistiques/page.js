@@ -1,6 +1,14 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { LABELS_BELGES } from '@/lib/labels-belges'
+import { EXCLUDED_LABELS } from '@/lib/excluded-labels'
+import {
+  getAlbumsCount,
+  getCompositeursCount,
+  getMillesimesCount,
+  getJokersCount,
+  fetchAllAlbums,
+} from '@/lib/stats-counts'
 
 export const metadata = {
   title: 'En chiffres',
@@ -19,7 +27,7 @@ export const metadata = {
 
 export const revalidate = 3600
 
-const ANNEES_VOLUME = [2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+const ANNEES_VOLUME = [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
 
 const ORDRE_PERIODES = [
   'Médiévale',
@@ -44,26 +52,38 @@ const COMPOSITRICES = [
 const COMPOSITRICES_SET = new Set(COMPOSITRICES)
 
 export default async function StatistiquesPage() {
-  const [albumsRes, compositeursRes] = await Promise.all([
-    supabase
-      .from('albums')
-      .select('composers, label, published_at, millesime_annee, millesime_categorie, millesime_label, is_joker, title'),
+  // Big numbers via count exact (serveur), strictement identiques à la home
+  // (les 4 helpers sont importés du même module `lib/stats-counts`).
+  // Agrégations via pagination pour contourner la limite PostgREST 1000.
+  const [
+    nbAlbums,
+    nbCompositeurs,
+    nbMillesimes,
+    nbJokers,
+    albums,
+    compositeursRes,
+  ] = await Promise.all([
+    getAlbumsCount(),
+    getCompositeursCount(),
+    getMillesimesCount(),
+    getJokersCount(),
+    fetchAllAlbums('composers, label, published_at, millesime_annee, millesime_categorie, millesime_label, is_joker, title'),
     supabase.from('compositeurs').select('name, period'),
   ])
 
-  const albums = albumsRes.data || []
   const compositeurs = compositeursRes.data || []
 
-  // Big numbers
-  const nbAlbums = albums.length
-  const nbCompositeurs = compositeurs.length
+  // Labels distincts (exclusion Outhere et autres holdings via EXCLUDED_LABELS)
   const labelsSet = new Set()
-  for (const a of albums) if (a.label) labelsSet.add(a.label)
+  for (const a of albums) {
+    if (a.label && !EXCLUDED_LABELS.has(a.label)) labelsSet.add(a.label)
+  }
   const nbLabels = labelsSet.size
-  const nbMillesimes = albums.filter(a => a.millesime_annee).length
-  const nbJokers = albums.filter(a => a.is_joker).length
   const nbCompositrices = compositeurs.filter(c => COMPOSITRICES_SET.has(c.name)).length
-  const nbLabelsBelges = LABELS_BELGES.filter(l => labelsSet.has(l)).length
+  const nbLabelsBelges = LABELS_BELGES
+    .filter(l => !EXCLUDED_LABELS.has(l))
+    .filter(l => labelsSet.has(l))
+    .length
 
   // Volume annuel
   const volumeParAnnee = Object.fromEntries(ANNEES_VOLUME.map(y => [y, 0]))
@@ -84,10 +104,10 @@ export default async function StatistiquesPage() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 15)
 
-  // Top labels
+  // Top labels (EXCLUDED_LABELS filtrés)
   const statsLabels = {}
   for (const a of albums) {
-    if (!a.label) continue
+    if (!a.label || EXCLUDED_LABELS.has(a.label)) continue
     if (!statsLabels[a.label]) statsLabels[a.label] = { count: 0, millesimes: 0 }
     statsLabels[a.label].count++
     if (a.millesime_annee) statsLabels[a.label].millesimes++
