@@ -218,8 +218,7 @@ export default async function StatistiquesPage() {
           derrière chacun d&apos;eux, une critique signée, une rencontre, un enregistrement écouté, un combat
           éditorial — pour que les grandes œuvres continuent de circuler et que les créatrices et créateurs
           d&apos;aujourd&apos;hui trouvent leur place aux côtés des classiques du patrimoine. Ces chiffres ne
-          reprennent que les articles publiés en ligne depuis 2012 et une partie des jokers doivent encore
-          être indexés à la main. Phono.Crescendo est développée en continu.
+          reprennent que les articles publiés en ligne depuis 2012. Phono.Crescendo est développée en continu.
         </p>
         <p className="text-sm italic text-stone-500 text-center mt-4">— La rédaction</p>
       </section>
