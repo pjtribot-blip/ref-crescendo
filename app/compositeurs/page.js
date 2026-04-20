@@ -1,10 +1,10 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { ORDRE_PERIODES as PERIODES } from '@/lib/periodes'
 export const metadata = {
   title: 'Compositeurs — Référence Crescendo',
   description: 'Catalogue de 608 compositeurs de musique classique.',
 }
-const PERIODES = ['Médiévale','Renaissance','Baroque','Classique','Romantique','Post-romantique','Moderne','Contemporaine']
 
 export default async function CompositeursPage({ searchParams }) {
   const periode = (await searchParams)?.periode || null

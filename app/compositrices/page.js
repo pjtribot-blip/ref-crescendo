@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { ORDRE_PERIODES } from '@/lib/periodes'
 
 export const metadata = {
   title: 'Compositrices — Le Matrimoine Crescendo',
@@ -48,17 +49,6 @@ const COMPOSITRICES = [
   'Unsuk Chin',
   'Margaret Brouwer',
   'Jeanine Tesori',
-]
-
-const ORDRE_PERIODES = [
-  'Médiévale',
-  'Renaissance',
-  'Baroque',
-  'Classique',
-  'Romantique',
-  'Post-romantique',
-  'Moderne',
-  'Contemporaine',
 ]
 
 export default async function CompositricesPage() {

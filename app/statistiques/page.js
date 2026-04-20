@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { LABELS_BELGES } from '@/lib/labels-belges'
 import { EXCLUDED_LABELS } from '@/lib/excluded-labels'
+import { ORDRE_PERIODES } from '@/lib/periodes'
 import {
   getAlbumsCount,
   getCompositeursCount,
@@ -28,17 +29,6 @@ export const metadata = {
 export const revalidate = 3600
 
 const ANNEES_VOLUME = [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
-
-const ORDRE_PERIODES = [
-  'Médiévale',
-  'Renaissance',
-  'Baroque',
-  'Classique',
-  'Romantique',
-  'Post-romantique',
-  'Moderne',
-  'Contemporaine',
-]
 
 const COMPOSITRICES = [
   'Hildegard von Bingen', 'Francesca Caccini', 'Barbara Strozzi', 'Louise Bertin',
@@ -419,6 +409,9 @@ function PeriodeBars({ periodes, total }) {
     <div className="border border-stone-200 rounded-xl bg-white p-5 space-y-3">
       {ORDRE_PERIODES.map(p => {
         const v = periodes[p]
+        // Masque le bucket transitoire « Contemporaine » quand il est vide
+        // (tous les compositeurs ont été reclassés automatiquement).
+        if (p === 'Contemporaine' && v === 0) return null
         const w = Math.round((v / max) * 100)
         const pct = total > 0 ? Math.round((v / total) * 100) : 0
         return (
