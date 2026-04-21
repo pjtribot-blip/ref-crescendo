@@ -1,13 +1,11 @@
 name: Rescan Labels for NULL Albums
 
+# Re-scanne les articles dont label IS NULL ou '' et écrit les UPDATE
+# directement en base. Pas de dry-run ni d'input — la passe 1 a été
+# validée offline avec 0 faux positif.
+
 on:
   workflow_dispatch:
-    inputs:
-      apply:
-        description: "Appliquer les UPDATE en base (false = dry-run, rien n'est modifié)"
-        type: boolean
-        required: true
-        default: false
 
 jobs:
   rescan-labels:
@@ -24,22 +22,11 @@ jobs:
       - name: Install dependencies
         run: npm install @supabase/supabase-js node-html-parser
 
-      - name: Debug input value
-        run: |
-          echo "inputs.apply raw value : '${{ inputs.apply }}'"
-          echo "ternary result         : '${{ inputs.apply && '--apply' || '' }}'"
-          if [ "${{ inputs.apply }}" = "true" ]; then
-            echo "### 🔵 Mode APPLY — les UPDATE seront écrits en base" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "### 🟡 Mode DRY-RUN — aucun UPDATE ne sera émis" >> $GITHUB_STEP_SUMMARY
-          fi
-
-      - name: Rescan labels
+      - name: Rescan labels (apply)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-        run: |
-          node scripts/rescan-labels-for-nulls.js ${{ inputs.apply && '--apply' || '' }} | tee rescan.log
+        run: node scripts/rescan-labels-for-nulls.js --apply | tee rescan.log
 
       - name: Extract final report to GitHub Summary
         if: always()
