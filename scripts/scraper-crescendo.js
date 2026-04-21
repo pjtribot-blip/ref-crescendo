@@ -14,6 +14,12 @@ import { createClient } from '@supabase/supabase-js'
 import { parse } from 'node-html-parser'
 import { normalizeLabel } from './labels-whitelist.js'
 
+// TODO : chroniques groupées (plusieurs albums/labels dans un même article)
+// Cas non traité : un seul label est retenu par `normalizeLabel` et écrit en
+// base, les autres sont perdus. À adresser dans une passe ultérieure — par
+// exemple en stockant un tableau de labels détectés ou en créant une relation
+// albums ↔ labels many-to-many. Hors scope de la passe 1.
+
 const SUPABASE_URL = process.env.SUPABASE_URL
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY
 const API = 'https://www.crescendo-magazine.be/wp-json/wp/v2'
@@ -187,12 +193,27 @@ async function processPost(post) {
   const header = parseHeader(headerText)
   const notes = parseNotes(htmlContent)
   const { coverUrl, tags } = await enrichFromArticle(url)
+
+  // Passe 1 (priorité 1) : si parseHeader n'a rien trouvé, on tente une
+  // extraction via les tags WordPress. `enrichFromArticle` a déjà récupéré
+  // les `<a rel="tag">` de l'article — gratuit à tester.
+  let resolvedLabel = header.label
+  if (!resolvedLabel && Array.isArray(tags)) {
+    for (const tag of tags) {
+      const normalized = normalizeLabel(tag)
+      if (normalized) {
+        resolvedLabel = normalized
+        break
+      }
+    }
+  }
+
   return {
     id: post.slug,
     title: header.title || articleTitle,
     article_title: articleTitle,
     composers: header.composers,
-    label: header.label,
+    label: resolvedLabel,
     duration: header.duration,
     recording_date: header.recording_date,
     author: null,
