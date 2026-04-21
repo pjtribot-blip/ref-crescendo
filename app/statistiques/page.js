@@ -98,12 +98,26 @@ export default async function StatistiquesPage() {
   const statsLabels = {}
   for (const a of albums) {
     if (!a.label || EXCLUDED_LABELS.has(a.label)) continue
-    if (!statsLabels[a.label]) statsLabels[a.label] = { count: 0, millesimes: 0 }
+    if (!statsLabels[a.label]) statsLabels[a.label] = { count: 0, millesimes: 0, jokers: 0 }
     statsLabels[a.label].count++
     if (a.millesime_annee) statsLabels[a.label].millesimes++
+    if (a.is_joker) statsLabels[a.label].jokers++
   }
   const topLabels = Object.entries(statsLabels)
     .sort((a, b) => b[1].count - a[1].count)
+    .slice(0, 15)
+
+  // T1 : top labels par volume de Jokers (classement brut)
+  const topLabelsByJokerCount = Object.entries(statsLabels)
+    .filter(([, s]) => s.jokers > 0)
+    .sort((a, b) => b[1].jokers - a[1].jokers)
+    .slice(0, 15)
+
+  // T2 : top labels par taux de sélectivité — catalogue ≥ 10 albums
+  const topLabelsBySelectivity = Object.entries(statsLabels)
+    .filter(([, s]) => s.count >= 10 && s.jokers > 0)
+    .map(([name, s]) => [name, { ...s, taux: (s.jokers / s.count) * 100 }])
+    .sort((a, b) => b[1].taux - a[1].taux)
     .slice(0, 15)
 
   // Périodes
@@ -166,6 +180,25 @@ export default async function StatistiquesPage() {
 
       <Section title="Top 15 — Labels" subtitle="Les maisons discographiques les plus présentes dans la référence, et leurs Millésimes">
         <LabelTable rows={topLabels} />
+      </Section>
+
+      <Section title="Labels primés — Jokers" subtitle="Deux lectures complémentaires : volume brut et taux de sélectivité.">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h3 className="text-base font-serif text-stone-900 mb-3">Top 15 — Labels les plus primés</h3>
+            <JokersRawTable rows={topLabelsByJokerCount} />
+            <p className="text-xs text-stone-500 italic mt-3">
+              Classement brut des labels par nombre de coups de cœur reçus.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-base font-serif text-stone-900 mb-3">Top 15 — Labels les plus sélectifs</h3>
+            <JokersRateTable rows={topLabelsBySelectivity} />
+            <p className="text-xs text-stone-500 italic mt-3">
+              Parmi les labels ayant au moins 10 albums chroniqués. Reflète la qualité moyenne plutôt que le volume.
+            </p>
+          </div>
+        </div>
       </Section>
 
       <Section title="Répartition des compositeurs par période" subtitle="608 compositeurs répartis sur neuf siècles de musique écrite">
@@ -396,6 +429,95 @@ function LabelTable({ rows }) {
               </tr>
             )
           })}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function JokersRawTable({ rows }) {
+  if (rows.length === 0) {
+    return (
+      <div className="border border-stone-200 rounded-xl bg-white p-4 text-xs text-stone-500 text-center">
+        Aucun label avec un Joker attribué.
+      </div>
+    )
+  }
+  return (
+    <div className="border border-stone-200 rounded-xl bg-white overflow-hidden">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-stone-200 bg-stone-50">
+            <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-stone-500 w-8">#</th>
+            <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-stone-500">Label</th>
+            <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-orange-800">Jokers</th>
+            <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-amber-800">Mill.</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([name, stats], i) => (
+            <tr key={name} className="border-b border-stone-100 last:border-0">
+              <td className="px-3 py-2 text-stone-400 font-mono text-xs">{i + 1}</td>
+              <td className="px-3 py-2 text-stone-800 font-medium">
+                <Link href={`/albums?label=${encodeURIComponent(name)}`} className="hover:text-stone-600 underline underline-offset-2 decoration-stone-200">
+                  {name}
+                </Link>
+              </td>
+              <td className="px-3 py-2 text-right text-orange-700 tabular-nums font-semibold">{stats.jokers}</td>
+              <td className="px-3 py-2 text-right tabular-nums">
+                {stats.millesimes > 0 ? (
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold bg-amber-100 border border-amber-300 text-amber-900 px-1.5 py-0.5 rounded">
+                    ★ {stats.millesimes}
+                  </span>
+                ) : (
+                  <span className="text-stone-300">—</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function JokersRateTable({ rows }) {
+  if (rows.length === 0) {
+    return (
+      <div className="border border-stone-200 rounded-xl bg-white p-4 text-xs text-stone-500 text-center">
+        Aucun label avec au moins 10 albums et un Joker attribué.
+      </div>
+    )
+  }
+  return (
+    <div className="border border-stone-200 rounded-xl bg-white overflow-hidden">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-stone-200 bg-stone-50">
+            <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-stone-500 w-8">#</th>
+            <th className="text-left px-3 py-2 text-xs uppercase tracking-wider text-stone-500">Label</th>
+            <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-stone-500">Jokers / Albums</th>
+            <th className="text-right px-3 py-2 text-xs uppercase tracking-wider text-orange-800">Taux</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([name, stats], i) => (
+            <tr key={name} className="border-b border-stone-100 last:border-0">
+              <td className="px-3 py-2 text-stone-400 font-mono text-xs">{i + 1}</td>
+              <td className="px-3 py-2 text-stone-800 font-medium">
+                <Link href={`/albums?label=${encodeURIComponent(name)}`} className="hover:text-stone-600 underline underline-offset-2 decoration-stone-200">
+                  {name}
+                </Link>
+              </td>
+              <td className="px-3 py-2 text-right text-stone-600 tabular-nums">
+                <span className="text-orange-700 font-semibold">{stats.jokers}</span>
+                <span className="text-stone-400"> / {stats.count}</span>
+              </td>
+              <td className="px-3 py-2 text-right text-stone-800 tabular-nums font-semibold">
+                {stats.taux.toFixed(1)}%
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
