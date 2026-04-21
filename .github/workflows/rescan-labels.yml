@@ -24,8 +24,10 @@ jobs:
       - name: Install dependencies
         run: npm install @supabase/supabase-js node-html-parser
 
-      - name: Mode summary
+      - name: Debug input value
         run: |
+          echo "inputs.apply raw value : '${{ inputs.apply }}'"
+          echo "ternary result         : '${{ inputs.apply && '--apply' || '' }}'"
           if [ "${{ inputs.apply }}" = "true" ]; then
             echo "### 🔵 Mode APPLY — les UPDATE seront écrits en base" >> $GITHUB_STEP_SUMMARY
           else
@@ -37,11 +39,7 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
-          if [ "${{ inputs.apply }}" = "true" ]; then
-            node scripts/rescan-labels-for-nulls.js --apply | tee rescan.log
-          else
-            node scripts/rescan-labels-for-nulls.js | tee rescan.log
-          fi
+          node scripts/rescan-labels-for-nulls.js ${{ inputs.apply && '--apply' || '' }} | tee rescan.log
 
       - name: Extract final report to GitHub Summary
         if: always()

@@ -28,6 +28,14 @@ const APPLY = args.includes('--apply')
 const DRY_RUN = !APPLY
 const PAUSE_MS = 400
 
+// Diagnostic prominent du mode effectif — apparaît en tête des logs du
+// workflow GitHub pour qu'on détecte immédiatement un input mal propagé.
+console.log('━'.repeat(72))
+console.log(`  process.argv : ${JSON.stringify(process.argv.slice(2))}`)
+console.log(`  Mode détecté : ${APPLY ? 'APPLY (UPDATE en base)' : 'DRY-RUN (aucune modification)'}`)
+console.log('━'.repeat(72))
+console.log()
+
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 const sleep = (ms) => new Promise(r => setTimeout(r, ms))
 
@@ -135,6 +143,7 @@ async function main() {
   console.log(`Durée estimée : ~${est} min\n`)
 
   let viaHeader = 0, viaTag = 0, missed = 0, errors = 0
+  let fatalRlsDetected = false
   const successes = []
   const failures = []
 
@@ -147,11 +156,20 @@ async function main() {
         else if (source === 'tag') viaTag++
         if (successes.length < 20) successes.push({ id: album.id, label, source, raw })
         if (APPLY) {
-          const { error: upErr } = await supabase
+          // count: 'exact' pour vérifier qu'une ligne a réellement été
+          // affectée — détecte une RLS silencieuse ou une mauvaise clé
+          const { error: upErr, count: upCount } = await supabase
             .from('albums')
-            .update({ label })
+            .update({ label }, { count: 'exact' })
             .eq('id', album.id)
           if (upErr) throw upErr
+          if (upCount === 0) {
+            fatalRlsDetected = true
+            throw new Error(
+              `UPDATE a affecté 0 ligne pour id=${album.id} — probablement `
+              + `RLS sur la table albums ou clé service_role incorrecte.`
+            )
+          }
         }
       } else {
         missed++
@@ -160,6 +178,17 @@ async function main() {
     } catch (err) {
       errors++
       if (failures.length < 20) failures.push({ id: album.id, err: err.message })
+    }
+
+    // Fail-fast structurel : si le premier UPDATE n'a modifié aucune ligne
+    // (RLS ou clé incorrecte), inutile de continuer 1201 itérations
+    if (fatalRlsDetected) {
+      console.error('\n' + '✗'.repeat(36))
+      console.error('✗ ARRÊT IMMÉDIAT : UPDATE ne modifie aucune ligne en base.')
+      console.error('✗ Cause probable : clé SUPABASE_SERVICE_KEY ≠ service_role,')
+      console.error('✗ ou RLS activée sur `albums` sans policy service_role.')
+      console.error('✗'.repeat(36))
+      process.exit(2)
     }
 
     if ((i + 1) % 50 === 0 || i === albums.length - 1) {
