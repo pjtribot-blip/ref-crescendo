@@ -182,6 +182,15 @@ export default async function StatistiquesPage() {
         <LabelTable rows={topLabels} />
       </Section>
 
+      <Section title="Les Jokers au fil du temps" subtitle="Les coups de cœur mensuels de la rédaction, par année de publication">
+        <BarChart
+          data={ANNEES_VOLUME.map(y => ({ label: String(y), value: jokersParAnnee[y] }))}
+          max={jokersMax}
+          barColor="fill-amber-500"
+          axisLabel="Jokers / an"
+        />
+      </Section>
+
       <Section title="Labels primés — Jokers" subtitle="Deux lectures complémentaires : volume brut et taux de sélectivité.">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -233,15 +242,6 @@ export default async function StatistiquesPage() {
             </ul>
           </div>
         )}
-      </Section>
-
-      <Section title="Les Jokers au fil du temps" subtitle="Les coups de cœur mensuels de la rédaction, par année de publication">
-        <BarChart
-          data={ANNEES_VOLUME.map(y => ({ label: String(y), value: jokersParAnnee[y] }))}
-          max={jokersMax}
-          barColor="fill-amber-500"
-          axisLabel="Jokers / an"
-        />
       </Section>
 
       <section className="border-t border-stone-200 pt-10 mt-12">
