@@ -1,0 +1,61 @@
+name: Rescan Labels for NULL Albums
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Appliquer les UPDATE en base (false = dry-run, rien n'est modifié)"
+        type: boolean
+        required: true
+        default: false
+
+jobs:
+  rescan-labels:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install @supabase/supabase-js node-html-parser
+
+      - name: Mode summary
+        run: |
+          if [ "${{ inputs.apply }}" = "true" ]; then
+            echo "### 🔵 Mode APPLY — les UPDATE seront écrits en base" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### 🟡 Mode DRY-RUN — aucun UPDATE ne sera émis" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Rescan labels
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          if [ "${{ inputs.apply }}" = "true" ]; then
+            node scripts/rescan-labels-for-nulls.js --apply | tee rescan.log
+          else
+            node scripts/rescan-labels-for-nulls.js | tee rescan.log
+          fi
+
+      - name: Extract final report to GitHub Summary
+        if: always()
+        run: |
+          echo "## Rapport final" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          awk '/RAPPORT FINAL/,0' rescan.log >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "(rapport final indisponible — voir logs)" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload full log as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rescan-labels-log
+          path: rescan.log
+          retention-days: 14
