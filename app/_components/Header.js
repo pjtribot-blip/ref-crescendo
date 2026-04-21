@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import * as NavigationMenu from '@radix-ui/react-navigation-menu'
 import * as Dialog from '@radix-ui/react-dialog'
 import * as Collapsible from '@radix-ui/react-collapsible'
+import SearchBox from './SearchBox'
 
 const NAV_GROUPS = [
   {
@@ -94,7 +95,8 @@ export default function Header() {
           Phono.Crescendo
         </Link>
 
-        {/* Desktop nav */}
+        {/* Bloc droit : nav desktop + SearchBox (toutes tailles) + Magazine + burger */}
+        <div className="flex items-center gap-3">
         <div className="hidden md:flex items-center gap-5">
           <NavigationMenu.Root delayDuration={100} className="relative">
             <NavigationMenu.List className="flex items-center gap-5">
@@ -148,26 +150,19 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
-
-          <Link
-            href="/recherche"
-            aria-label="Recherche"
-            className={`p-2 rounded hover:bg-stone-100 text-stone-600 hover:text-stone-900 transition-colors ${
-              isActive('/recherche', pathname) ? 'bg-stone-100 text-stone-900' : ''
-            }`}
-          >
-            <SearchIcon />
-          </Link>
-
-          <a
-            href="https://www.crescendo-magazine.be"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-3 py-1.5 border border-stone-300 rounded-lg text-sm text-stone-700 hover:border-stone-500 hover:text-stone-900 transition-colors"
-          >
-            Magazine →
-          </a>
         </div>
+
+        {/* SearchBox : visible toutes tailles (input inline desktop, icône+Dialog mobile) */}
+        <SearchBox />
+
+        <a
+          href="https://www.crescendo-magazine.be"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden md:inline-flex px-3 py-1.5 border border-stone-300 rounded-lg text-sm text-stone-700 hover:border-stone-500 hover:text-stone-900 transition-colors"
+        >
+          Magazine →
+        </a>
 
         {/* Mobile burger */}
         <Dialog.Root open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -277,6 +272,7 @@ export default function Header() {
             </Dialog.Content>
           </Dialog.Portal>
         </Dialog.Root>
+        </div>
       </div>
     </nav>
   )
