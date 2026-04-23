@@ -310,16 +310,18 @@ export default async function AlbumsPage({ searchParams }) {
         {albums?.map(a => (
           <article key={a.id}
             className="flex flex-col border border-stone-200 rounded-lg overflow-hidden hover:border-stone-400 hover:shadow-sm transition-all group relative">
-            {a.millesime_annee && (
-              <div className="absolute top-2 right-2 z-10 bg-amber-100 border border-amber-300 text-amber-900 text-[10px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider">
-                ★ {a.millesime_label || 'Millésime'}
-              </div>
-            )}
-            {!a.millesime_annee && a.is_joker && (
-              <div className="absolute top-2 right-2 z-10 bg-orange-100 border border-orange-300 text-orange-800 text-[10px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider inline-flex items-center gap-1">
-                <JokerLogo size="sm" /> Joker
-              </div>
-            )}
+            <div className="absolute top-2 right-2 z-10 flex flex-col gap-1 items-end">
+              {a.millesime_annee && (
+                <div className="bg-amber-100 border border-amber-300 text-amber-900 text-[10px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider">
+                  ★ {a.millesime_label || 'Millésime'}
+                </div>
+              )}
+              {a.is_joker && (
+                <div className="bg-orange-100 border border-orange-300 text-orange-800 text-[10px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider inline-flex items-center gap-1">
+                  <JokerLogo size="sm" /> Joker
+                </div>
+              )}
+            </div>
             <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="block">
               {a.cover_url ? (
                 <div className="aspect-square bg-stone-100 overflow-hidden">

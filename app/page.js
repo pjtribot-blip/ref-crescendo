@@ -83,7 +83,7 @@ export default async function Home() {
     supabase.from('albums').select('millesime_annee').not('millesime_annee', 'is', null),
     supabase
       .from('albums')
-      .select('id, title, article_title, label, published_at, critique_url, cover_url')
+      .select('id, title, article_title, label, published_at, critique_url, cover_url, millesime_annee, millesime_label, is_joker')
       .not('published_at', 'is', null)
       .order('published_at', { ascending: false })
       .limit(8),
@@ -255,8 +255,20 @@ export default async function Home() {
                 href={a.critique_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block border border-stone-200 rounded-lg overflow-hidden hover:border-stone-400 hover:shadow-sm transition-all group"
+                className="block border border-stone-200 rounded-lg overflow-hidden hover:border-stone-400 hover:shadow-sm transition-all group relative"
               >
+                <div className="absolute top-2 right-2 z-10 flex flex-col gap-1 items-end">
+                  {a.millesime_annee && (
+                    <div className="bg-amber-100 border border-amber-300 text-amber-900 text-[10px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider">
+                      ★ {a.millesime_label || 'Millésime'}
+                    </div>
+                  )}
+                  {a.is_joker && (
+                    <div className="bg-orange-100 border border-orange-300 text-orange-800 text-[10px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider inline-flex items-center gap-1">
+                      <JokerLogo size="sm" /> Joker
+                    </div>
+                  )}
+                </div>
                 {a.cover_url ? (
                   <div className="aspect-square bg-stone-100 overflow-hidden">
                     <img src={a.cover_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />

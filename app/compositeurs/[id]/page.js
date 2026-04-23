@@ -82,9 +82,12 @@ export default async function CompositeurPage({ params }) {
               </Link>
             )}
             {nbJokers > 0 && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-orange-100 border border-orange-300 rounded-md text-xs font-medium text-orange-800">
+              <Link
+                href="/jokers"
+                className="inline-flex items-center gap-2 px-3 py-1.5 bg-orange-100 border-2 border-orange-400 rounded-lg text-sm font-semibold text-orange-900 hover:bg-orange-200 hover:border-orange-500 shadow-sm transition-colors"
+              >
                 <JokerLogo size="md" /> {nbJokers} Joker{nbJokers > 1 ? 's' : ''}
-              </span>
+              </Link>
             )}
             {hasMatrimoine && (
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-rose-100 border border-rose-300 rounded-md text-xs font-semibold text-rose-800">
@@ -138,15 +141,20 @@ export default async function CompositeurPage({ params }) {
                       <span className="text-stone-300 text-xl">♪</span>
                     </div>
                   )}
-                  {a.millesime_annee ? (
-                    <span className="absolute -top-1 -right-1 bg-amber-100 border border-amber-300 text-amber-900 text-[9px] font-semibold px-1 py-0.5 rounded shadow-sm whitespace-nowrap">
-                      ★ Millésime {a.millesime_annee}
-                    </span>
-                  ) : a.is_joker ? (
-                    <span className="absolute -top-1 -right-1 bg-orange-100 border border-orange-300 text-orange-800 text-[9px] font-semibold px-1 py-0.5 rounded shadow-sm inline-flex items-center gap-0.5">
-                      <JokerLogo size="xs" /> Joker
-                    </span>
-                  ) : null}
+                  {(a.millesime_annee || a.is_joker) && (
+                    <div className="absolute -top-1 -right-1 flex flex-col gap-0.5 items-end">
+                      {a.millesime_annee && (
+                        <span className="bg-amber-100 border border-amber-300 text-amber-900 text-[9px] font-semibold px-1 py-0.5 rounded shadow-sm whitespace-nowrap">
+                          ★ Millésime {a.millesime_annee}
+                        </span>
+                      )}
+                      {a.is_joker && (
+                        <span className="bg-orange-100 border border-orange-300 text-orange-800 text-[9px] font-semibold px-1 py-0.5 rounded shadow-sm inline-flex items-center gap-0.5">
+                          <JokerLogo size="xs" /> Joker
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </a>
                 <div className="min-w-0 flex-1">
                   <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="block">
