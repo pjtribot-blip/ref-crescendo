@@ -35,15 +35,18 @@ export default async function AlbumsPage({ searchParams }) {
   const millesime = params?.millesime === '1'
   const joker = params?.joker === '1'
   const sort = params?.sort && TRIS[params.sort] ? params.sort : 'recent'
+  const anneeRaw = (params?.annee || '').trim()
+  const annee = /^\d{4}$/.test(anneeRaw) ? parseInt(anneeRaw, 10) : null
   const hide = params?.hide !== '0'   // défaut activé ; désactivé seulement si hide=0 explicite
   const page = Math.max(1, parseInt(params?.page || '1'))
   const perPage = 24
   const from = (page - 1) * perPage
   const to = from + perPage - 1
 
-  const [composersRes, labelsRes] = await Promise.all([
+  const [composersRes, labelsRes, yearsRes] = await Promise.all([
     supabase.from('albums').select('composers'),
     supabase.from('albums').select('label').not('label', 'is', null).neq('label', ''),
+    supabase.from('albums').select('published_at').not('published_at', 'is', null),
   ])
 
   const composerCounts = {}
@@ -64,6 +67,13 @@ export default async function AlbumsPage({ searchParams }) {
     .sort((a, b) => b[1] - a[1])
     .map(([name, count]) => ({ name, count }))
 
+  const yearSet = new Set()
+  for (const row of yearsRes.data || []) {
+    const y = row.published_at && new Date(row.published_at).getUTCFullYear()
+    if (y) yearSet.add(y)
+  }
+  const yearList = [...yearSet].sort((a, b) => b - a)
+
   let query = supabase
     .from('albums')
     .select('id, title, article_title, label, published_at, critique_url, cover_url, composers, notes, millesime_annee, millesime_label, is_joker', { count: 'exact' })
@@ -74,6 +84,9 @@ export default async function AlbumsPage({ searchParams }) {
   const periodeConfig = PERIODES[periode]
   if (periodeConfig.gte) query = query.gte('published_at', periodeConfig.gte)
   if (periodeConfig.lte) query = query.lte('published_at', periodeConfig.lte)
+  if (annee !== null) {
+    query = query.gte('published_at', `${annee}-01-01`).lte('published_at', `${annee}-12-31`)
+  }
   if (millesime) query = query.not('millesime_annee', 'is', null)
   if (joker) query = query.eq('is_joker', true)
   if (hide) query = query.not('label', 'is', null).neq('label', '')
@@ -84,12 +97,13 @@ export default async function AlbumsPage({ searchParams }) {
   const { data: albums, count } = await query
   const totalPages = Math.max(1, Math.ceil((count || 0) / perPage))
 
-  const RESET_VALUES = { q: '', composer: '', label: '', periode: 'all', millesime: '', joker: '', sort: 'recent' }
+  const RESET_VALUES = { q: '', composer: '', label: '', periode: 'all', annee: '', millesime: '', joker: '', sort: 'recent' }
   const activeFilters = []
   if (q) activeFilters.push({ key: 'q', label: `« ${q} »` })
   if (composer) activeFilters.push({ key: 'composer', label: composer })
   if (label) activeFilters.push({ key: 'label', label })
   if (periode !== 'all') activeFilters.push({ key: 'periode', label: PERIODES[periode].label })
+  if (annee !== null) activeFilters.push({ key: 'annee', label: `Année ${annee}` })
   if (millesime) activeFilters.push({ key: 'millesime', label: '★ Millésime' })
   if (joker) activeFilters.push({ key: 'joker', label: 'Joker uniquement' })
   if (sort !== 'recent') activeFilters.push({ key: 'sort', label: `Tri : ${TRIS[sort].label}` })
@@ -103,6 +117,7 @@ export default async function AlbumsPage({ searchParams }) {
       composer,
       label,
       periode,
+      annee: annee ?? '',
       millesime: millesime ? '1' : '',
       joker: joker ? '1' : '',
       sort,
@@ -154,7 +169,7 @@ export default async function AlbumsPage({ searchParams }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
           <div>
             <label htmlFor="label-select" className="block text-xs font-medium uppercase tracking-wider text-stone-500 mb-1">
               Label
@@ -183,6 +198,22 @@ export default async function AlbumsPage({ searchParams }) {
             >
               {Object.entries(PERIODES).map(([key, p]) => (
                 <option key={key} value={key}>{p.label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="annee" className="block text-xs font-medium uppercase tracking-wider text-stone-500 mb-1">
+              Année
+            </label>
+            <select
+              id="annee"
+              name="annee"
+              defaultValue={annee ?? ''}
+              className="w-full border border-stone-300 rounded px-3 py-1.5 text-sm bg-white focus:border-stone-500 focus:outline-none"
+            >
+              <option value="">Toutes les années</option>
+              {yearList.map(y => (
+                <option key={y} value={y}>{y}</option>
               ))}
             </select>
           </div>
