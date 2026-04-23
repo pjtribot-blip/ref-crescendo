@@ -55,7 +55,7 @@ export default async function CompositricesPage() {
     nb_albums: nbAlbumsParNom[c.name] || 0,
     nb_millesimes: millesimesParNom[c.name] || 0,
     matrimoine: matrimoineParNom.has(c.name),
-  }))
+  })).filter(c => c.nb_albums >= 1)
 
   enrichies.sort((a, b) => {
     if (b.nb_albums !== a.nb_albums) return b.nb_albums - a.nb_albums
@@ -126,9 +126,7 @@ function CompositriceCard({ c }) {
       {meta && <p className="text-xs text-stone-400">{meta}</p>}
       {c.period && <p className="text-xs text-stone-500 mt-1">{c.period}</p>}
       <p className="text-xs text-stone-500 mt-2">
-        {c.nb_albums > 0
-          ? `${c.nb_albums} album${c.nb_albums > 1 ? 's' : ''} dans la référence`
-          : 'Compositrice référencée'}
+        {c.nb_albums} album{c.nb_albums > 1 ? 's' : ''} dans la référence
       </p>
     </Link>
   )
