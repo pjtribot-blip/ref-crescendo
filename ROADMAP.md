@@ -1,11 +1,45 @@
 # Roadmap Phono.Crescendo
 
-Les prochains chantiers, par ordre d'ouverture approximatif — non exhaustif, non contractuel.
+État d'avancement et prochains chantiers, mis à jour après les deux journées de travail des 22-23 avril 2026.
+
+---
+
+## ✅ TERMINÉ (23 avril 2026)
+
+- **Chantier labels NULL** : ~460 labels récupérés (de 1202 à ~740 articles sans label). Le reliquat est majoritairement non-discographique (concerts, hommages, dossiers) — pas pertinent de continuer.
+- **Page `/compositrices` basculée sur `gender='F'` en DB** (fin de la liste hardcodée de 29 noms).
+- **29 compositrices marquées `F`** en DB (migration `migrations/fill-gender-compositrices.sql`).
+- **Scraper à 6 runs/jour** (02/06/10/14/18/22 UTC) avec short-circuit `processPost` qui skippe les articles déjà complets — protège les corrections manuelles (title, composers) sinon réécrites à chaque upsert.
+- **Page `/labels` enrichie** : tri Millésimes / Jokers, fiches détail `/labels/[name]`, top 5 compositeurs par label.
+- **4 erreurs d'attribution Naxos corrigées** (DGG, Belvedere, Indesens × 2).
+
+## ⏸️ EN DETTE (à revisiter plus tard)
+
+- Erreurs d'attribution possibles sur d'autres labels — à spotter au fur et à mesure.
+- Créer le compositeur **Louise Bertin** en DB (actuellement absente).
+- Tagger **Sofia Avramidou** comme `F` et réactiver son affichage sur `/compositrices` quand un album sera chroniqué (actuellement masquée par le filtre `nb_albums >= 1`).
+
+## 🔜 CHANTIERS À VENIR (par priorité)
+
+1. **Page `/interpretes`** — exploiter la table `interprets` sous-exploitée (voir Chantier 2 ci-dessous).
+2. **Parcours thématiques curatés** — travail éditorial (voir Chantier 4).
+3. **Badge « Joker » plus visible** sur les fiches albums.
+4. **Filtre par année** sur `/albums`.
+5. **Affiliations Presto / Qobuz** — petit revenu (Chantier 9).
+6. **Export / partage de sélections** (voir Chantier 6).
+7. **Table `labels` avec métadonnées** (pays, fondation, URL) — si l'envie éditoriale se présente.
+
+## 🛠️ AMÉLIORATIONS TECHNIQUES POSSIBLES
+
+- **Scraper** : privilégier le header technique de l'article plutôt que les tags WP, pour éviter les faux positifs du type « Naxos distributeur » étiquetés à tort sur des labels tiers.
+- **`.env.local`** : ajouter `SUPABASE_DB_URL` pour débloquer les futurs scripts de maintenance en local (aujourd'hui placeholder, il faut passer par Supabase SQL Editor ou Vercel à chaque fois).
+
+---
+
+## Backlog détaillé par chantier
 
 **Échelle de complexité** : S (≤ 1 j), M (2-5 j), L (semaine+).
 **Dépendances** = ce qui doit être en place ou ajouté avant/pendant le chantier.
-
----
 
 ### 1. Moteur de recherche unifié
 Recherche transversale (compositeurs, interprètes, albums, labels) avec pertinence, tolérance aux accents et fuzzy matching.
@@ -26,11 +60,7 @@ Enrichir avec tri popularité, typologie (chef / soliste / ensemble), portraits,
 ---
 
 ### 3. Matrimoine étoffé (compositrices)
-Dépasser la liste hardcodée de 29 compositrices de `/compositrices` en exploitant le champ `gender` existant dans la table `compositeurs` (filtre `WHERE gender = 'F'`).
-Intégrer les redécouvertes en cours (Tailleferre, Ethel Smyth, Louise Farrenc, Grace Williams…) au-delà du noyau Matrimoine + élargir le corpus de bios enrichies.
-
-- **Complexité** : M
-- **Dépendances** : audit de la colonne `gender` (complétude du flag F/M sur les 608 compositeurs), retrait de la liste hardcodée côté front, éventuellement migration de rattrapage pour les cas non renseignés.
+✅ **Livré 2026-04-23** — `/compositrices` bascule sur `.eq('gender', 'F')` en DB, liste hardcodée supprimée, tri `nb_albums` desc, filtre `nb_albums >= 1` pour masquer les entrées sans album chroniqué. 29 compositrices taggées via `migrations/fill-gender-compositrices.sql`. Élargissement au-delà du noyau reste ouvert (audit complet de la colonne `gender` sur les 608 compositeurs, bios enrichies).
 
 ---
 
