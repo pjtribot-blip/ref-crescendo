@@ -93,7 +93,10 @@ export default async function AlbumsPage({ searchParams }) {
   if (hide) query = query.not('label', 'is', null).neq('label', '')
 
   const tri = TRIS[sort]
-  query = query.order(tri.column, { ascending: tri.asc, nullsFirst: false }).range(from, to)
+  query = query
+    .order(tri.column, { ascending: tri.asc, nullsFirst: false })
+    .order('id', { ascending: true })
+    .range(from, to)
 
   const { data: albums, count } = await query
   const totalPages = Math.max(1, Math.ceil((count || 0) / perPage))

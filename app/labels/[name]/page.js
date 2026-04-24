@@ -21,7 +21,8 @@ export default async function LabelDetailPage({ params }) {
     .from('albums')
     .select('id, title, article_title, composers, label, published_at, critique_url, cover_url, millesime_annee, millesime_categorie, is_joker')
     .eq('label', name)
-    .order('published_at', { ascending: false })
+    .order('published_at', { ascending: false, nullsFirst: false })
+    .order('id', { ascending: true })
 
   const albums = albumsRaw || []
   if (albums.length === 0) notFound()

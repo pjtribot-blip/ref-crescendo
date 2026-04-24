@@ -28,7 +28,8 @@ export default async function CompositeurPage({ params }) {
     .from('albums')
     .select('id, title, article_title, label, published_at, critique_url, notes, cover_url, millesime_annee, millesime_categorie, millesime_label, is_joker')
     .contains('composers', [c.name])
-    .order('published_at', { ascending: false })
+    .order('published_at', { ascending: false, nullsFirst: false })
+    .order('id', { ascending: true })
 
   const albums = albumsRaw || []
   const millesimes = albums.filter(a => a.millesime_annee)
