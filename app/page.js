@@ -8,6 +8,7 @@ import {
   getCompositeursCount,
   getMillesimesCount,
   getJokersCount,
+  fetchAllAlbums,
 } from '@/lib/stats-counts'
 
 export const revalidate = 3600
@@ -75,7 +76,7 @@ export default async function Home() {
     getCompositeursCount(),
     getMillesimesCount(),
     getJokersCount(),
-    supabase.from('albums').select('label').not('label', 'is', null),
+    fetchAllAlbums('label'),
     supabase.from('albums').select('millesime_annee').not('millesime_annee', 'is', null),
     supabase
       .from('albums')
@@ -93,7 +94,7 @@ export default async function Home() {
   ])
 
   const nbLabels = new Set(
-    (labelsRes.data || [])
+    (labelsRes || [])
       .map(a => a.label)
       .filter(l => l && !EXCLUDED_LABELS.has(l))
   ).size

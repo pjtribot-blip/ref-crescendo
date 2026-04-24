@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
 import { JokerLogo } from '@/lib/joker-logo'
+import { fetchAllAlbums } from '@/lib/stats-counts'
 
 export const metadata = {
   title: 'Labels — Référence Crescendo',
@@ -11,11 +11,7 @@ export default async function LabelsPage({ searchParams }) {
   const tri = (await searchParams)?.tri
   const sortKey = tri === 'millesimes' ? 'millesimes' : tri === 'jokers' ? 'jokers' : 'count'
 
-  const { data } = await supabase
-    .from('albums')
-    .select('label, millesime_annee, is_joker')
-    .not('label', 'is', null)
-    .neq('label', '')
+  const data = await fetchAllAlbums('label, millesime_annee, is_joker')
 
   const stats = {}
   for (const row of data || []) {
