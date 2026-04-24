@@ -11,7 +11,7 @@ import {
   fetchAllAlbums,
 } from '@/lib/stats-counts'
 
-export const revalidate = 3600
+export const revalidate = 600
 
 const ANNEES_MILLESIMES = [2021, 2022, 2023, 2024, 2025]
 
