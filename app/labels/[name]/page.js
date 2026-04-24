@@ -41,12 +41,6 @@ export default async function LabelDetailPage({ params }) {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5)
 
-  const topNames = topComposers.map(([n]) => n)
-  const { data: compMeta } = topNames.length > 0
-    ? await supabase.from('compositeurs').select('id, name').in('name', topNames)
-    : { data: [] }
-  const idByName = Object.fromEntries((compMeta || []).map(m => [m.name, m.id]))
-
   return (
     <main className="max-w-3xl mx-auto px-4 py-10">
       <Link href="/labels" className="text-sm text-stone-400 hover:text-stone-600 mb-6 inline-block">← Labels</Link>
@@ -82,25 +76,18 @@ export default async function LabelDetailPage({ params }) {
         <section className="mb-10">
           <h2 className="text-xs font-medium uppercase tracking-widest text-stone-400 mb-3">Compositeurs les plus chroniqués</h2>
           <ul className="space-y-1">
-            {topComposers.map(([nom, count]) => {
-              const id = idByName[nom]
-              const content = (
-                <>
+            {topComposers.map(([nom, count]) => (
+              <li key={nom} className="text-sm flex gap-2 items-baseline">
+                <span className="text-stone-300">○</span>
+                <Link
+                  href={`/albums?composer=${encodeURIComponent(nom)}&label=${encodeURIComponent(name)}`}
+                  className="hover:text-stone-900"
+                >
                   <span className="text-stone-700">{nom}</span>{' '}
                   <span className="text-stone-400">({count})</span>
-                </>
-              )
-              return (
-                <li key={nom} className="text-sm flex gap-2 items-baseline">
-                  <span className="text-stone-300">○</span>
-                  {id ? (
-                    <Link href={`/compositeurs/${id}`} className="hover:text-stone-900">{content}</Link>
-                  ) : (
-                    <span>{content}</span>
-                  )}
-                </li>
-              )
-            })}
+                </Link>
+              </li>
+            ))}
           </ul>
         </section>
       )}
