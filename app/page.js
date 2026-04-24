@@ -73,6 +73,8 @@ async function fetchJokerPool() {
       .eq('is_joker', true)
       .not('published_at', 'is', null)
       .lt('published_at', cutoffIso)
+      .not('cover_url', 'is', null)
+      .neq('cover_url', '')
       .order('id', { ascending: true })
       .range(from, from + pageSize - 1)
     if (error) throw error
@@ -89,6 +91,8 @@ async function fetchMillesimePool() {
     .from('albums')
     .select('id, title, composers, label, critique_url, cover_url, published_at, millesime_annee, millesime_label, millesime_categorie')
     .not('millesime_annee', 'is', null)
+    .not('cover_url', 'is', null)
+    .neq('cover_url', '')
     .order('id', { ascending: true })
   return data || []
 }
