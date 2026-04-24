@@ -61,6 +61,51 @@ const EXPLORER_TONES = {
   orange: 'border-orange-200 bg-orange-50/40 hover:border-orange-400',
 }
 
+async function fetchJokerPool() {
+  const cutoffIso = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString()
+  const pageSize = 1000
+  const all = []
+  let from = 0
+  while (true) {
+    const { data, error } = await supabase
+      .from('albums')
+      .select('id, title, composers, label, critique_url, cover_url, published_at')
+      .eq('is_joker', true)
+      .not('published_at', 'is', null)
+      .lt('published_at', cutoffIso)
+      .order('id', { ascending: true })
+      .range(from, from + pageSize - 1)
+    if (error) throw error
+    if (!data || data.length === 0) break
+    all.push(...data)
+    if (data.length < pageSize) break
+    from += pageSize
+  }
+  return all
+}
+
+async function fetchMillesimePool() {
+  const { data } = await supabase
+    .from('albums')
+    .select('id, title, composers, label, critique_url, cover_url, published_at, millesime_annee, millesime_label, millesime_categorie')
+    .not('millesime_annee', 'is', null)
+    .order('id', { ascending: true })
+  return data || []
+}
+
+function todayKeyBrussels() {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Brussels',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+  }).format(new Date())
+}
+
+function seedFromString(str) {
+  let h = 5381
+  for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) >>> 0
+  return h
+}
+
 export default async function Home() {
   const [
     nbAlbums,
@@ -71,6 +116,8 @@ export default async function Home() {
     millesimesByYearRes,
     latestAlbumsRes,
     latestJokersRes,
+    jokerPool,
+    millesimePool,
   ] = await Promise.all([
     getAlbumsCount(),
     getCompositeursCount(),
@@ -91,6 +138,8 @@ export default async function Home() {
       .not('published_at', 'is', null)
       .order('published_at', { ascending: false })
       .limit(6),
+    fetchJokerPool(),
+    fetchMillesimePool(),
   ])
 
   const nbLabels = new Set(
@@ -108,6 +157,14 @@ export default async function Home() {
 
   const latestAlbums = latestAlbumsRes.data || []
   const latestJokers = latestJokersRes.data || []
+
+  const dayKey = todayKeyBrussels()
+  const jokerDuJour = jokerPool.length
+    ? jokerPool[seedFromString(dayKey + ':joker') % jokerPool.length]
+    : null
+  const millesimeDuJour = millesimePool.length
+    ? millesimePool[seedFromString(dayKey + ':millesime') % millesimePool.length]
+    : null
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-12">
@@ -154,6 +211,21 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      {(jokerDuJour || millesimeDuJour) && (
+        <section className="mb-20">
+          <div className="flex flex-wrap items-baseline justify-between gap-3 mb-4 pb-2 border-b border-stone-200">
+            <h2 className="text-3xl font-serif text-stone-900">À (re)découvrir aujourd&apos;hui</h2>
+          </div>
+          <p className="text-stone-600 mb-6 leading-relaxed">
+            Chaque jour, un Joker et un Millésime tirés de nos archives.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {jokerDuJour && <DiscoveryCard album={jokerDuJour} kind="joker" />}
+            {millesimeDuJour && <DiscoveryCard album={millesimeDuJour} kind="millesime" />}
+          </div>
+        </section>
+      )}
 
       <section className="mb-20">
         <div className="flex flex-wrap items-baseline justify-between gap-3 mb-6 pb-2 border-b border-stone-200">
@@ -312,6 +384,76 @@ export default async function Home() {
         </p>
       </footer>
     </main>
+  )
+}
+
+function DiscoveryCard({ album, kind }) {
+  const composer = Array.isArray(album.composers) ? (album.composers[0] || '') : (album.composers || '')
+  const label = visibleLabel(album.label)
+  const annee = album.published_at ? new Date(album.published_at).getFullYear() : null
+  const isJoker = kind === 'joker'
+  const borderCls = isJoker
+    ? 'border-orange-300 hover:border-orange-400'
+    : 'border-amber-300 hover:border-amber-400'
+  const badgeCls = isJoker
+    ? 'bg-orange-100 border-orange-300 text-orange-800'
+    : 'bg-amber-100 border-amber-300 text-amber-900'
+  const ctaCls = isJoker
+    ? 'text-orange-700 hover:text-orange-900'
+    : 'text-amber-800 hover:text-amber-900'
+  return (
+    <article className={`flex flex-col sm:flex-row border rounded-xl overflow-hidden bg-white transition-all hover:shadow-md ${borderCls}`}>
+      <a
+        href={album.critique_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block sm:w-40 shrink-0"
+      >
+        {album.cover_url ? (
+          <div className="aspect-square bg-stone-100 overflow-hidden">
+            <img src={album.cover_url} alt="" className="w-full h-full object-cover" />
+          </div>
+        ) : (
+          <div className="aspect-square bg-stone-100 flex items-center justify-center">
+            <span className="text-stone-300 text-4xl">♪</span>
+          </div>
+        )}
+      </a>
+      <div className="flex flex-col p-4 flex-1">
+        <div className={`self-start inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded uppercase tracking-wider border mb-2 ${badgeCls}`}>
+          {isJoker ? (
+            <><JokerLogo size="sm" /> Joker du jour</>
+          ) : (
+            <>★ Millésime du jour</>
+          )}
+        </div>
+        <a href={album.critique_url} target="_blank" rel="noopener noreferrer" className="block">
+          <p className="font-medium text-stone-900 text-sm leading-snug line-clamp-2 mb-1">
+            {album.title}
+          </p>
+        </a>
+        {composer && <p className="text-xs text-stone-600 mb-1 line-clamp-1">{composer}</p>}
+        {label && <p className="text-xs uppercase tracking-wider text-stone-500 mb-1">{label}</p>}
+        {!isJoker && album.millesime_annee && (
+          <p className="text-xs text-amber-800 mb-1">
+            Millésime {album.millesime_annee}
+            {album.millesime_label ? ` · ${album.millesime_label}` : ''}
+          </p>
+        )}
+        {annee && <p className="text-xs text-stone-500 mb-3">Chroniqué en {annee}</p>}
+        <div className="flex flex-wrap items-center gap-2 mt-auto">
+          <a
+            href={album.critique_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`text-xs font-medium ${ctaCls}`}
+          >
+            Lire la chronique →
+          </a>
+          <PrestoButton title={album.title} composers={album.composers} />
+        </div>
+      </div>
+    </article>
   )
 }
 
