@@ -1,8 +1,19 @@
 # Roadmap Phono.Crescendo
 
-État d'avancement et prochains chantiers, mis à jour après les deux journées de travail des 22-23 avril 2026.
+État d'avancement et prochains chantiers, mis à jour après les journées de travail des 22-24 avril 2026.
 
 ---
+
+## ✅ TERMINÉ (24 avril 2026)
+
+- **Joker du jour + Millésime du jour sur la home** : encart « À (re)découvrir aujourd'hui » entre « Les Millésimes » et « Explorer ». Tirage déterministe par date (même album pour tout le monde le même jour), pool limité aux albums chroniqués il y a plus de 365 jours pour valoriser l'archive. Seed djb2 hash salé différemment pour Joker et Millésime (pas de corrélation). Fuseau `Europe/Brussels` pour que le changement ait lieu à minuit heure belge.
+- **Fix structurel** : exclusion des albums sans `cover_url` des pools Joker/Millésime du jour (évite les cartes avec cover manquante).
+- **Tri cross-site aligné** : `nullsFirst` + tiebreak par `id` sur `/labels/[name]`, `/compositeurs/[id]` et `/albums` — fini les ordres incohérents d'une page à l'autre.
+- **Compteur Labels home corrigé** : `fetchAllAlbums` pagine pour contourner la limite PostgREST (1000 lignes), le big number passe de 48 à ~234.
+- **Navigation `/labels/[name]` Top 5 compositeurs** : clic mène vers `/albums?composer=X&label=Y` (parcours contextuel) au lieu de la fiche compositeur globale.
+- **Uniformisation visuelle du label cross-site** : UPPERCASE + `tracking-wider` + `stone-500` + ligne dédiée sous le titre. Filtre Outhere étendu partout (home, albums, jokers, labels, compositeurs).
+- **Filtre par année sur `/albums`** (`?annee=YYYY`) — livré.
+- **Badges Joker uniformisés et visibles** : home « Dernières critiques », `/albums`, `/compositeurs/[id]`, `/labels/[name]` — même pastille orange avec logo.
 
 ## ✅ TERMINÉ (23 avril 2026)
 
@@ -18,16 +29,15 @@
 - Erreurs d'attribution possibles sur d'autres labels — à spotter au fur et à mesure.
 - Créer le compositeur **Louise Bertin** en DB (actuellement absente).
 - Tagger **Sofia Avramidou** comme `F` et réactiver son affichage sur `/compositrices` quand un album sera chroniqué (actuellement masquée par le filtre `nb_albums >= 1`).
+- **8 albums avec `label='Outhere'`** à réattribuer à leur sous-label réel (Alpha, Ricercar, etc.) — priorité basse, masqués côté affichage par le filtre Outhere.
 
 ## 🔜 CHANTIERS À VENIR (par priorité)
 
 1. **Page `/interpretes`** — exploiter la table `interprets` sous-exploitée (voir Chantier 2 ci-dessous).
 2. **Parcours thématiques curatés** — travail éditorial (voir Chantier 4).
-3. **Badge « Joker » plus visible** sur les fiches albums.
-4. **Filtre par année** sur `/albums`.
-5. **Affiliations Presto / Qobuz** — petit revenu (Chantier 9).
-6. **Export / partage de sélections** (voir Chantier 6).
-7. **Table `labels` avec métadonnées** (pays, fondation, URL) — si l'envie éditoriale se présente.
+3. **Affiliations Presto / Qobuz** — petit revenu (Chantier 9).
+4. **Export / partage de sélections** (voir Chantier 6).
+5. **Table `labels` avec métadonnées** (pays, fondation, URL) — si l'envie éditoriale se présente.
 
 ## 🛠️ AMÉLIORATIONS TECHNIQUES POSSIBLES
 
