@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { PrestoButton } from '@/lib/presto'
 import { JokerLogo } from '@/lib/joker-logo'
+import { visibleLabel } from '@/lib/excluded-labels'
 
 export const revalidate = 3600
 
@@ -119,7 +120,9 @@ function AlbumBody({ album }) {
           {album.title}
         </p>
         {composer && <p className="text-xs text-stone-600 line-clamp-1 mb-1">{composer}</p>}
-        {album.label && <p className="text-xs text-stone-400 uppercase tracking-wider">{album.label}</p>}
+        {visibleLabel(album.label) && (
+          <p className="text-xs uppercase tracking-wider text-stone-500 mb-1">{visibleLabel(album.label)}</p>
+        )}
       </div>
     </a>
   )

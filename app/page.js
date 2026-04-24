@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { PrestoButton } from '@/lib/presto'
 import { JokerLogo } from '@/lib/joker-logo'
-import { EXCLUDED_LABELS } from '@/lib/excluded-labels'
+import { EXCLUDED_LABELS, visibleLabel } from '@/lib/excluded-labels'
 import {
   getAlbumsCount,
   getCompositeursCount,
@@ -13,10 +13,6 @@ import {
 export const revalidate = 3600
 
 const ANNEES_MILLESIMES = [2021, 2022, 2023, 2024, 2025]
-
-function visibleLabel(label) {
-  return label && !EXCLUDED_LABELS.has(label) ? label : null
-}
 
 const EXPLORER = [
   {
@@ -214,7 +210,7 @@ export default async function Home() {
                       {a.title}
                     </p>
                     {composer && <p className="text-xs text-stone-600 mb-1 line-clamp-1">{composer}</p>}
-                    {label && <p className="text-xs text-stone-400 uppercase tracking-wider mb-2">{label}</p>}
+                    {label && <p className="text-xs uppercase tracking-wider text-stone-500 mb-1">{label}</p>}
                     {a.published_at && (
                       <p className="text-xs text-stone-500">
                         {new Date(a.published_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -282,10 +278,14 @@ export default async function Home() {
                   <p className="font-medium text-stone-800 text-xs leading-snug line-clamp-2 mb-1">
                     {a.title || a.article_title}
                   </p>
-                  <p className="text-xs text-stone-400">
-                    {label && <span className="block truncate">{label}</span>}
-                    {a.published_at ? new Date(a.published_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
-                  </p>
+                  {label && (
+                    <p className="text-xs uppercase tracking-wider text-stone-500 mb-1 truncate">{label}</p>
+                  )}
+                  {a.published_at && (
+                    <p className="text-xs text-stone-400">
+                      {new Date(a.published_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </p>
+                  )}
                 </div>
               </a>
             )

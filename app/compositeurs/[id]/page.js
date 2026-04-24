@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
 import { PrestoButton } from '@/lib/presto'
 import { JokerLogo } from '@/lib/joker-logo'
+import { visibleLabel } from '@/lib/excluded-labels'
 
 export async function generateMetadata({ params }) {
   const id = (await params).id
@@ -161,10 +162,14 @@ export default async function CompositeurPage({ params }) {
                     <p className="text-sm font-medium text-stone-700 group-hover:text-stone-900 truncate">
                       {a.title || a.article_title}
                     </p>
-                    <p className="text-xs text-stone-400 mt-0.5">
-                      {a.label && `${a.label} · `}
-                      {a.published_at ? new Date(a.published_at).getFullYear() : ''}
-                    </p>
+                    {visibleLabel(a.label) && (
+                      <p className="text-xs uppercase tracking-wider text-stone-500 mt-0.5 mb-1 truncate">
+                        {visibleLabel(a.label)}
+                      </p>
+                    )}
+                    {a.published_at && (
+                      <p className="text-xs text-stone-400">{new Date(a.published_at).getFullYear()}</p>
+                    )}
                   </a>
                   <div className="flex flex-wrap items-center gap-2 mt-1.5">
                     <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="text-xs text-stone-600 hover:text-stone-900 font-medium">

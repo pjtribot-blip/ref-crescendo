@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase'
 import { PrestoButton } from '@/lib/presto'
 import { JokerLogo } from '@/lib/joker-logo'
 import HideUnlabeledToggle from '@/app/_components/HideUnlabeledToggle'
+import { visibleLabel } from '@/lib/excluded-labels'
 
 export const metadata = {
   title: 'Albums — Référence Crescendo',
@@ -307,7 +308,9 @@ export default async function AlbumsPage({ searchParams }) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-        {albums?.map(a => (
+        {albums?.map(a => {
+          const label = visibleLabel(a.label)
+          return (
           <article key={a.id}
             className="flex flex-col border border-stone-200 rounded-lg overflow-hidden hover:border-stone-400 hover:shadow-sm transition-all group relative">
             <div className="absolute top-2 right-2 z-10 flex flex-col gap-1 items-end">
@@ -336,10 +339,12 @@ export default async function AlbumsPage({ searchParams }) {
                 <p className="font-medium text-stone-800 text-sm leading-snug line-clamp-2 mb-1">
                   {a.title || a.article_title}
                 </p>
-                <p className="text-xs text-stone-400">
-                  {a.label && `${a.label}`}
-                  {a.published_at ? ` · ${new Date(a.published_at).getFullYear()}` : ''}
-                </p>
+                {label && (
+                  <p className="text-xs uppercase tracking-wider text-stone-500 mb-1 truncate">{label}</p>
+                )}
+                {a.published_at && (
+                  <p className="text-xs text-stone-400">{new Date(a.published_at).getFullYear()}</p>
+                )}
                 {a.notes?.interprétation && (
                   <p className="text-xs text-stone-500 mt-1">Interprétation : {a.notes.interprétation}/10</p>
                 )}
@@ -352,7 +357,8 @@ export default async function AlbumsPage({ searchParams }) {
               <PrestoButton title={a.title || a.article_title} composers={a.composers} />
             </div>
           </article>
-        ))}
+          )
+        })}
       </div>
 
       {(!albums || albums.length === 0) && (
