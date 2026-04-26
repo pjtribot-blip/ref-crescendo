@@ -32,6 +32,7 @@ const NAV_GROUPS = [
       { href: '/compositrices', label: 'Compositrices' },
       { href: '/millesimes/matrimoine', label: 'Matrimoine' },
       { href: '/belgique', label: 'Belgique' },
+      { href: '/premieres', label: 'Premières mondiales' },
     ],
   },
 ]
