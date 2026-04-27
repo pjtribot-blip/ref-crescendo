@@ -176,7 +176,10 @@ function parseNotes(htmlContent) {
 async function enrichFromArticle(url) {
   try {
     const doc = await fetchHTML(url)
-    const coverUrl = doc.querySelector('.entry-content img')?.getAttribute('src') || null
+    const img = doc.querySelector('img.wp-post-image')
+             || doc.querySelector('.content img')
+             || doc.querySelector('.entry-content img')
+    const coverUrl = img?.getAttribute('src') || null
     const tags = [...doc.querySelectorAll('a[rel="tag"]')].map(a => a.text.trim()).filter(Boolean)
     return { coverUrl, tags }
   } catch { return { coverUrl: null, tags: [] } }

@@ -62,7 +62,7 @@ async function main() {
           process.stdout.write('!')
         }
       } else {
-        await supabase.from('albums').update({ cover_url: '' }).eq('id', album.id)
+        await supabase.from('albums').update({ cover_url: null }).eq('id', album.id)
         process.stdout.write('·')
       }
       

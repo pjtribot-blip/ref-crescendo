@@ -1,5 +1,7 @@
 name: Fetch Missing Covers
 on:
+  schedule:
+    - cron: '0 4 * * *'
   workflow_dispatch:
 jobs:
   fetch-covers:
