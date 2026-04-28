@@ -369,24 +369,6 @@ export default async function Home() {
           })}
         </div>
       </section>
-
-      <footer className="border-t border-stone-200 pt-8 mt-12 text-center">
-        <p className="text-sm text-stone-500 leading-relaxed max-w-3xl mx-auto">
-          <strong className="text-stone-700">Phono.Crescendo</strong> — Une émanation de{' '}
-          <a
-            href="https://www.crescendo-magazine.be"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-amber-700 hover:text-amber-900 underline underline-offset-2"
-          >
-            Crescendo Magazine
-          </a>
-          , média musical francophone basé en Belgique depuis 1993.
-        </p>
-        <p className="text-xs text-stone-400 mt-2 italic">
-          Fondé par Bernadette Beyne (1949-2018) et Michelle Debra (1950-2025).
-        </p>
-      </footer>
     </main>
   )
 }

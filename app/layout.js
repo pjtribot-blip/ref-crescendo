@@ -1,5 +1,6 @@
 import './globals.css'
 import Header from './_components/Header'
+import Footer from './_components/Footer'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ref.crescendo-magazine.be'
 
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
       <body className="bg-stone-50 min-h-screen">
         <Header />
         {children}
+        <Footer />
       </body>
     </html>
   )
