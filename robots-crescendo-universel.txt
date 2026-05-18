@@ -1,0 +1,102 @@
+# robots.txt — Crescendo / Pierre-Jean Tribot
+# Version universelle pour tous les projets éditoriaux Crescendo.
+# Dernière mise à jour : 18 mai 2026.
+#
+# Politique : protection anti-pillage IA + autorisation des moteurs SEO légitimes.
+# Contenu sous licence CC BY-NC-SA 4.0 — réutilisation libre avec attribution, non commerciale.
+
+# ====================================================================
+# BLOCAGE — Scrapeurs IA qui pillent sans attribution ni trafic retour
+# ====================================================================
+
+# OpenAI
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: OAI-SearchBot
+Disallow: /
+
+# Perplexity (siphonne sans attribution suffisante)
+User-agent: PerplexityBot
+Disallow: /
+
+# Common Crawl (alimente la plupart des datasets IA)
+User-agent: CCBot
+Disallow: /
+
+# ByteDance / TikTok
+User-agent: Bytespider
+Disallow: /
+
+# Anthropic (anciens crawlers d'entraînement)
+User-agent: anthropic-ai
+Disallow: /
+
+# Google-Extended (entraînement Gemini — Googlebot Search reste autorisé)
+User-agent: Google-Extended
+Disallow: /
+
+# Apple Intelligence
+User-agent: Applebot-Extended
+Disallow: /
+
+# Meta / Llama
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+# Cohere
+User-agent: cohere-ai
+Disallow: /
+
+# Diffbot (scraping commercial)
+User-agent: Diffbot
+Disallow: /
+
+# Omgili / Webz (agrégateur commercial)
+User-agent: Omgilibot
+Disallow: /
+
+User-agent: Omgili
+Disallow: /
+
+# ====================================================================
+# AUTORISATION — Moteurs qui apportent du trafic avec attribution
+# ====================================================================
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Qwantify
+Allow: /
+
+User-agent: EcosiaBot
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+# ClaudeBot — cite les sources avec lien actif → on laisse passer
+User-agent: ClaudeBot
+Allow: /
+
+# ====================================================================
+# RÈGLE PAR DÉFAUT
+# ====================================================================
+
+User-agent: *
+Allow: /
