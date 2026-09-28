@@ -122,6 +122,8 @@ export default async function CompositeurPage({ params }) {
       <section className="mb-10 flex gap-3 flex-wrap">
         <a href={`https://www.crescendo-magazine.be/?s=${encodeURIComponent(c.name)}`} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 border border-stone-300 rounded hover:border-stone-500 text-stone-600 transition-colors">Rechercher sur Crescendo</a>
         <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(c.name)}`} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 border border-stone-300 rounded hover:border-stone-500 text-stone-600 transition-colors">YouTube</a>
+        {/* Pauline partage les identifiants de compositeurs de Phono */}
+        <a href={`https://pauline.crescendo-magazine.be/?c=${encodeURIComponent(c.id)}`} target="_blank" rel="noopener" className="text-xs px-3 py-1.5 border border-amber-400 rounded hover:border-amber-600 text-amber-700 transition-colors">Découvrir des compositeurs proches avec Pauline</a>
       </section>
 
       {albums.length > 0 && (
