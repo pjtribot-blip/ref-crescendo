@@ -4,6 +4,7 @@ import { PrestoButton } from '@/lib/presto'
 import { JokerLogo } from '@/lib/joker-logo'
 import HideUnlabeledToggle from '@/app/_components/HideUnlabeledToggle'
 import { visibleLabel } from '@/lib/excluded-labels'
+import { fetchAllAlbums } from '@/lib/stats-counts'
 
 export const metadata = {
   title: 'Albums — Référence Crescendo',
@@ -44,14 +45,12 @@ export default async function AlbumsPage({ searchParams }) {
   const from = (page - 1) * perPage
   const to = from + perPage - 1
 
-  const [composersRes, labelsRes, yearsRes] = await Promise.all([
-    supabase.from('albums').select('composers'),
-    supabase.from('albums').select('label').not('label', 'is', null).neq('label', ''),
-    supabase.from('albums').select('published_at').not('published_at', 'is', null),
-  ])
+  // Toutes les lignes, par lots de 1000 : un simple select() s'arrête aux
+  // 1000 premières (limite PostgREST) et fausse listes et compteurs des filtres.
+  const facetRows = await fetchAllAlbums('composers, label, published_at')
 
   const composerCounts = {}
-  for (const row of composersRes.data || []) {
+  for (const row of facetRows) {
     const names = Array.isArray(row.composers) ? row.composers : []
     for (const n of names) composerCounts[n] = (composerCounts[n] || 0) + 1
   }
@@ -60,7 +59,7 @@ export default async function AlbumsPage({ searchParams }) {
     .sort((a, b) => a[0].localeCompare(b[0], 'fr'))
 
   const labelCounts = {}
-  for (const row of labelsRes.data || []) {
+  for (const row of facetRows) {
     const l = row.label?.trim()
     if (l && l.length > 1 && l.length < 50) labelCounts[l] = (labelCounts[l] || 0) + 1
   }
@@ -69,7 +68,7 @@ export default async function AlbumsPage({ searchParams }) {
     .map(([name, count]) => ({ name, count }))
 
   const yearSet = new Set()
-  for (const row of yearsRes.data || []) {
+  for (const row of facetRows) {
     const y = row.published_at && new Date(row.published_at).getUTCFullYear()
     if (y) yearSet.add(y)
   }

@@ -1,13 +1,13 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import { PrestoButton } from '@/lib/presto'
 import { JokerLogo } from '@/lib/joker-logo'
 import { visibleLabel } from '@/lib/excluded-labels'
+import { findCompositeur } from '@/lib/compositeurs'
 
 export async function generateMetadata({ params }) {
-  const id = (await params).id
-  const { data: c } = await supabase.from('compositeurs').select('name, description').eq('id', id).single()
+  const { c } = await findCompositeur((await params).id, 'id, name, description')
   if (!c) return {}
   const title = c.name
   const description = (c.description?.slice(0, 155) || `${c.name} — fiche compositeur sur la base de données critique de Crescendo Magazine.`).trim()
@@ -20,9 +20,10 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function CompositeurPage({ params }) {
-  const id = (await params).id
-  const { data: c } = await supabase.from('compositeurs').select('*').eq('id', id).single()
+  const { c, requestedId } = await findCompositeur((await params).id)
   if (!c) notFound()
+  // Ancienne adresse accentuée (/compositeurs/jean-sébastien-bach) → adresse sans accent
+  if (c.id !== requestedId) permanentRedirect(`/compositeurs/${encodeURIComponent(c.id)}`)
 
   const { data: albumsRaw } = await supabase
     .from('albums')

@@ -46,7 +46,7 @@ export default async function sitemap() {
   }))
 
   const compositeursEntries = (compositeurs || []).map(c => ({
-    url: `${BASE_URL}/compositeurs/${c.id}`,
+    url: `${BASE_URL}/compositeurs/${encodeURIComponent(c.id)}`,
     lastModified: now,
     changeFrequency: 'monthly',
     priority: 0.6,
