@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og'
 import { supabase } from '@/lib/supabase'
+import { findCompositeur } from '@/lib/compositeurs'
 
 export const runtime = 'nodejs'
 export const size = { width: 1200, height: 630 }
@@ -7,12 +8,7 @@ export const contentType = 'image/png'
 export const alt = 'Fiche compositeur — Phono.Crescendo'
 
 export default async function Image({ params }) {
-  const { id } = await params
-  const { data: c } = await supabase
-    .from('compositeurs')
-    .select('name, born, died, nationality, period')
-    .eq('id', id)
-    .single()
+  const { c } = await findCompositeur((await params).id, 'id, name, born, died, nationality, period')
 
   if (!c) {
     return new ImageResponse(

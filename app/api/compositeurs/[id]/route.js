@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { visibleLabel } from '@/lib/excluded-labels'
+import { findCompositeur } from '@/lib/compositeurs'
 
 // GET /api/compositeurs/:id — API publique en lecture seule (chantier 7).
 // Disques critiqués par Crescendo pour un compositeur, Millésimes et Jokers d'abord.
@@ -16,11 +17,11 @@ export function OPTIONS() {
 }
 
 export async function GET(request, { params }) {
-  const { id } = await params
   const { searchParams } = new URL(request.url)
   const limit = Math.min(Math.max(parseInt(searchParams.get('limit') || '6', 10) || 6, 1), 50)
 
-  const { data: c } = await supabase.from('compositeurs').select('id, name').eq('id', id).single()
+  // Accepte aussi les anciens identifiants accentués (Pauline peut encore les utiliser)
+  const { c } = await findCompositeur((await params).id, 'id, name')
   if (!c) return Response.json({ error: 'Compositeur inconnu' }, { status: 404, headers: HEADERS })
 
   const { data } = await supabase
