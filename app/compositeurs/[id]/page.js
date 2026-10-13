@@ -19,11 +19,23 @@ export async function generateMetadata({ params }) {
   }
 }
 
+// Fiches Pauline existantes (mêmes identifiants que Phono), relues une fois par jour.
+// Sans réponse de Pauline, le bouton est simplement masqué.
+async function paulineSlugs() {
+  try {
+    const r = await fetch('https://pauline.crescendo-magazine.be/compositeurs/noms.json', { next: { revalidate: 86400 } })
+    return r.ok ? new Set((await r.json()).map(([, slug]) => slug)) : new Set()
+  } catch {
+    return new Set()
+  }
+}
+
 export default async function CompositeurPage({ params }) {
   const { c, requestedId } = await findCompositeur((await params).id)
   if (!c) notFound()
   // Ancienne adresse accentuée (/compositeurs/jean-sébastien-bach) → adresse sans accent
   if (c.id !== requestedId) permanentRedirect(`/compositeurs/${encodeURIComponent(c.id)}`)
+  const hasPauline = (await paulineSlugs()).has(c.id)
 
   const { data: albumsRaw } = await supabase
     .from('albums')
@@ -123,8 +135,10 @@ export default async function CompositeurPage({ params }) {
       <section className="mb-10 flex gap-3 flex-wrap">
         <a href={`https://www.crescendo-magazine.be/?s=${encodeURIComponent(c.name)}`} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 border border-stone-300 rounded hover:border-stone-500 text-stone-600 transition-colors">Rechercher sur Crescendo</a>
         <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(c.name)}`} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 border border-stone-300 rounded hover:border-stone-500 text-stone-600 transition-colors">YouTube</a>
-        {/* Pauline partage les identifiants de compositeurs de Phono */}
-        <a href={`https://pauline.crescendo-magazine.be/?c=${encodeURIComponent(c.id)}`} target="_blank" rel="noopener" className="text-xs px-3 py-1.5 border border-amber-400 rounded hover:border-amber-600 text-amber-700 transition-colors">Découvrir des compositeurs proches avec Pauline</a>
+        {/* Pauline partage les identifiants de compositeurs de Phono : lien vers sa fiche quand elle existe */}
+        {hasPauline && (
+          <a href={`https://pauline.crescendo-magazine.be/compositeur/${encodeURIComponent(c.id)}/`} target="_blank" rel="noopener" className="text-xs px-3 py-1.5 border border-amber-400 rounded hover:border-amber-600 text-amber-700 transition-colors">Découvrir {c.name} avec Pauline</a>
+        )}
       </section>
 
       {albums.length > 0 && (
