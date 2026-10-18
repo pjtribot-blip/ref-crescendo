@@ -234,24 +234,59 @@ async function processPost(post) {
 async function getExistingData(ids) {
   const { data } = await supabase
     .from('albums')
-    .select('id, label, cover_url')
+    .select('id, label, cover_url, composers')
     .in('id', ids)
   return data ? Object.fromEntries(data.map(d => [d.id, d])) : {}
+}
+
+// Noms de référence (compositeurs.name), chargés une fois par exécution.
+// Mêmes règles que supabase/migrations/20261010000000_normalize_composer_names.sql :
+// casse, accents et espaces ignorés, ou fin du nom (« van Beethoven »),
+// ou première lettre perdue (« ēteris Vasks ») — seulement si un seul
+// compositeur correspond. Sinon le nom extrait est gardé tel quel.
+const plier = s => s.replace(/\u00a0/g, ' ').toLowerCase()
+  .normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ø/g, 'o').replace(/ł/g, 'l')
+  .replace(/\s+/g, ' ').trim()
+let referenceNames = null
+async function loadReferenceNames() {
+  if (referenceNames) return referenceNames
+  const { data, error } = await supabase.from('compositeurs').select('name')
+  if (error) console.error('  ✗ compositeurs:', error.message)
+  referenceNames = (data || []).map(c => ({ name: c.name, plie: plier(c.name) }))
+  return referenceNames
+}
+
+// Noms seuls trop ambigus pour être rattachés automatiquement
+const AMBIGUOUS_COMPOSERS = new Set(['Strauss', 'Martin', 'Couperin', 'Caccini'])
+
+function canonicalComposer(raw, refs) {
+  const name = raw.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim()
+  if (AMBIGUOUS_COMPOSERS.has(name) || refs.some(r => r.name === name)) return name
+  const p = plier(name)
+  const hits = refs.filter(r =>
+    r.plie === p || r.plie.endsWith(' ' + p) ||
+    (p.length >= 6 && r.plie.length === p.length + 1 && r.plie.endsWith(p)))
+  return hits.length === 1 ? hits[0].name : name
 }
 
 async function upsertAlbums(albums) {
   // Récupérer les données existantes en une seule requête
   const ids = albums.map(a => a.id)
   const existing = await getExistingData(ids)
+  const refs = await loadReferenceNames()
 
-  // Préserver label et cover_url si déjà renseignés en base
-  // (la base a été nettoyée en v3.2, donc les labels existants sont tous valides)
+  // Préserver label, cover_url et composers si déjà renseignés en base
+  // (la base a été nettoyée en v3.2, donc les labels existants sont tous valides ;
+  // les noms de compositeurs ont été normalisés le 2026-10-11 et ne doivent pas
+  // être réécrits par l'extraction brute à chaque passage horaire)
   const toUpsert = albums.map(album => {
     const ex = existing[album.id]
     if (ex) {
       if (ex.label) album.label = ex.label
       if (ex.cover_url) album.cover_url = ex.cover_url
     }
+    if (ex?.composers?.length) album.composers = ex.composers
+    else album.composers = [...new Set((album.composers || []).map(c => canonicalComposer(c, refs)))]
     return album
   })
 

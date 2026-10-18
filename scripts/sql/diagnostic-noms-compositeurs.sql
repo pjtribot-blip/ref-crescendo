@@ -28,6 +28,9 @@ begin;
 -- Garde-fou : la suite suppose que composers est un tableau de texte (text[])
 do $$
 begin
+  if to_regclass('public.albums') is null or to_regclass('public.compositeurs') is null then
+    raise exception 'Tables albums / compositeurs introuvables : vous n''êtes sans doute pas dans le projet Supabase du site Phono.';
+  end if;
   if (select udt_name from information_schema.columns
       where table_schema = 'public' and table_name = 'albums' and column_name = 'composers') <> '_text' then
     raise exception 'albums.composers n''est pas de type text[] : ne pas lancer la migration, prévenir le développeur.';
