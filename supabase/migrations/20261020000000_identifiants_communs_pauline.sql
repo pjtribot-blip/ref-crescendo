@@ -28,4 +28,17 @@ set composers = array(
 where 'Marie de Grandval' = any(composers);
 delete from compositeurs where id = 'marie-grandval';
 
+-- 3. « Felix Mendelssohn Bartholdy » (14 albums, 5 graphies) → « Felix Mendelssohn »
+update albums
+set composers = array(
+  select m.x
+  from unnest(composers) with ordinality as t(n, o),
+       lateral (select case
+         when lower(regexp_replace(replace(t.n, chr(160), ' '), '[\s-]+', ' ', 'g'))
+              in ('felix mendelssohn bartholdy', 'felix menfdelssohn bartholdy')
+         then 'Felix Mendelssohn' else t.n end as x) m
+  group by m.x
+  order by min(t.o))
+where exists (select 1 from unnest(composers) n where n ilike '%bartholdy%');
+
 commit;
