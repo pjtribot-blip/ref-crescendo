@@ -6,6 +6,7 @@ import { JokerLogo } from '@/lib/joker-logo'
 import { visibleLabel } from '@/lib/excluded-labels'
 import { findCompositeur } from '@/lib/compositeurs'
 import { getIcmaAwardsForComposer } from '@/lib/icma'
+import { ICMA_CRITIQUES } from '@/lib/icma-critiques'
 
 export async function generateMetadata({ params }) {
   const { c } = await findCompositeur((await params).id, 'id, name, description')
@@ -146,6 +147,9 @@ export default async function CompositeurPage({ params }) {
                 <span>
                   {a.album_title || a.laureate_name}
                   <span className="text-stone-400"> · {a.icma_categories?.label_fr}{a.icma_labels?.name ? ` · ${a.icma_labels.name}` : ''}</span>
+                  {ICMA_CRITIQUES[a.id] && (
+                    <a href={ICMA_CRITIQUES[a.id]} target="_blank" rel="noopener noreferrer" className="text-stone-700 hover:text-stone-900"> · critique Crescendo →</a>
+                  )}
                 </span>
               </li>
             ))}

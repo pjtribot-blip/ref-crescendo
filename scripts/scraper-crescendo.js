@@ -116,7 +116,10 @@ function parseHeader(text) {
       .forEach(c => composers.add(c))
   }
 
-  const compPattern2 = /([A-ZÀ-Ÿa-zà-ÿ][a-zà-ÿ]+(?:\s+[A-ZÀ-Ÿ][A-ZÀ-Ÿa-zà-ÿ\-]+)+)\s*(?:\([\d\w\s\-–°?c\.]+\))?\s*:/g
+  // « Prénom [particule] Nom : » — lettres Unicode (ē, ř, ł, ż…) et particules
+  // minuscules (van, de, von, d’…) acceptées, pour ne plus produire
+  // « van Beethoven », « ēteris Vasks » ou « yna Bacewicz ».
+  const compPattern2 = /(?<!\p{L})(\p{Lu}[\p{L}'’\-]+(?:\s+(?:(?:van|von|de|der|den|del|della|di|da|du|des|la|le|dit)\s+)*(?:d['’])?\p{Lu}[\p{L}'’\-]+)+)\s*(?:\([\d\w\s\-–°?c\.]+\))?\s*:/gu
   let m
   while ((m = compPattern2.exec(text)) !== null) {
     const name = cleanComposerName(m[1])

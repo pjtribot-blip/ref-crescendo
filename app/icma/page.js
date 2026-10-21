@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { getIcmaYears, getIcmaAwards, plierNom } from '@/lib/icma'
+import { ICMA_CRITIQUES } from '@/lib/icma-critiques'
 
 export const metadata = {
   title: 'ICMA — International Classical Music Awards',
@@ -92,6 +93,11 @@ export default async function IcmaPage({ searchParams }) {
                       <p className="text-xs uppercase tracking-wider text-stone-500 mt-1">
                         {[a.icma_labels?.name, a.label_reference].filter(Boolean).join(' · ')}
                       </p>
+                    )}
+                    {ICMA_CRITIQUES[a.id] && (
+                      <a href={ICMA_CRITIQUES[a.id]} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-xs font-medium text-stone-700 hover:text-stone-900">
+                        Lire la critique Crescendo →
+                      </a>
                     )}
                     {a.jury_text && (
                       <details className="mt-2">
