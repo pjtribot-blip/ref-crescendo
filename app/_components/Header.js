@@ -24,6 +24,7 @@ const NAV_GROUPS = [
       { href: '/millesimes', label: 'Millésimes' },
       { href: '/jokers', label: 'Jokers' },
       { href: '/palmares', label: 'Palmarès' },
+      { href: '/icma', label: 'ICMA' },
     ],
   },
   {
