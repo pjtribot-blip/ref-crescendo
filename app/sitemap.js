@@ -13,6 +13,7 @@ const STATIC_ROUTES = [
   { path: '/millesimes', priority: 0.9, changeFrequency: 'weekly' },
   { path: '/millesimes/matrimoine', priority: 0.7, changeFrequency: 'monthly' },
   { path: '/palmares', priority: 0.8, changeFrequency: 'weekly' },
+  { path: '/icma', priority: 0.7, changeFrequency: 'monthly' },
   { path: '/belgique', priority: 0.8, changeFrequency: 'weekly' },
   { path: '/jokers', priority: 0.8, changeFrequency: 'weekly' },
   { path: '/statistiques', priority: 0.7, changeFrequency: 'weekly' },

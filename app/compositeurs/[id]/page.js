@@ -5,6 +5,7 @@ import { PrestoButton } from '@/lib/presto'
 import { JokerLogo } from '@/lib/joker-logo'
 import { visibleLabel } from '@/lib/excluded-labels'
 import { findCompositeur } from '@/lib/compositeurs'
+import { getIcmaAwardsForComposer } from '@/lib/icma'
 
 export async function generateMetadata({ params }) {
   const { c } = await findCompositeur((await params).id, 'id, name, description')
@@ -36,6 +37,7 @@ export default async function CompositeurPage({ params }) {
   // Ancienne adresse accentuée (/compositeurs/jean-sébastien-bach) → adresse sans accent
   if (c.id !== requestedId) permanentRedirect(`/compositeurs/${encodeURIComponent(c.id)}`)
   const hasPauline = (await paulineSlugs()).has(c.id)
+  const icmaAwards = await getIcmaAwardsForComposer(c.name).catch(() => [])
 
   const { data: albumsRaw } = await supabase
     .from('albums')
@@ -127,6 +129,25 @@ export default async function CompositeurPage({ params }) {
           <ul className="space-y-1">
             {c.key_works.map((w, i) => (
               <li key={i} className="text-stone-600 text-sm flex gap-2"><span className="text-stone-300">○</span> {w}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {icmaAwards.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-xs font-medium uppercase tracking-widest text-stone-400 mb-3">
+            Distinctions ICMA ({icmaAwards.length})
+          </h2>
+          <ul className="space-y-1">
+            {icmaAwards.map(a => (
+              <li key={a.id} className="text-sm text-stone-600 flex gap-2">
+                <Link href={`/icma?annee=${a.year}`} className="text-amber-700 hover:text-amber-900 shrink-0">{a.year}</Link>
+                <span>
+                  {a.album_title || a.laureate_name}
+                  <span className="text-stone-400"> · {a.icma_categories?.label_fr}{a.icma_labels?.name ? ` · ${a.icma_labels.name}` : ''}</span>
+                </span>
+              </li>
             ))}
           </ul>
         </section>
