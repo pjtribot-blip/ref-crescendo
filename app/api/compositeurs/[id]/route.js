@@ -1,11 +1,11 @@
 import { supabase } from '@/lib/supabase'
 import { visibleLabel } from '@/lib/excluded-labels'
 import { findCompositeur } from '@/lib/compositeurs'
+import { SITE_URL } from '@/lib/site'
 
 // GET /api/compositeurs/:id — API publique en lecture seule (chantier 7).
 // Disques critiqués par Crescendo pour un compositeur, Millésimes et Jokers d'abord.
 // Utilisée notamment par Pauline (mêmes identifiants de compositeurs).
-const SITE = 'https://phono.crescendo-magazine.be'
 const HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
@@ -39,7 +39,7 @@ export async function GET(request, { params }) {
   return Response.json({
     id: c.id,
     name: c.name,
-    url: `${SITE}/compositeurs/${c.id}`,
+    url: `${SITE_URL}/compositeurs/${c.id}`,
     count: albums.length,
     jokers: albums.filter(a => a.is_joker).length,
     millesimes: albums.filter(a => a.millesime_annee).length,

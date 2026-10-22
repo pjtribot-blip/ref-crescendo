@@ -5,6 +5,7 @@ import { PrestoButton } from '@/lib/presto'
 import { JokerLogo } from '@/lib/joker-logo'
 import { visibleLabel } from '@/lib/excluded-labels'
 import { findCompositeur } from '@/lib/compositeurs'
+import { compositeurJsonLd, jsonLdScript } from '@/lib/json-ld'
 import { getIcmaAwardsForComposer } from '@/lib/icma'
 import { ICMA_CRITIQUES } from '@/lib/icma-critiques'
 
@@ -16,6 +17,7 @@ export async function generateMetadata({ params }) {
   return {
     title,
     description,
+    alternates: { canonical: `/compositeurs/${encodeURIComponent(c.id)}` },
     openGraph: { type: 'profile', title: `${c.name} — Phono.Crescendo`, description },
     twitter: { card: 'summary_large_image', title: `${c.name} — Phono.Crescendo`, description },
   }
@@ -61,6 +63,7 @@ export default async function CompositeurPage({ params }) {
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(compositeurJsonLd(c, albums))} />
       <Link href="/compositeurs" className="text-sm text-stone-400 hover:text-stone-600 mb-6 inline-block">← Compositeurs</Link>
       <div className="mb-8">
         <div className="flex items-start justify-between gap-4 mb-2">

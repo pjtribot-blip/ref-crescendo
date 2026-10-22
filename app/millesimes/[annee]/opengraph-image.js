@@ -49,7 +49,7 @@ export default async function Image({ params }) {
           </div>
         </div>
         <div style={{ display: 'flex', fontSize: 22, color: '#a8a29e', fontFamily: 'sans-serif', letterSpacing: 2, textTransform: 'uppercase' }}>
-          ref.crescendo-magazine.be
+          phono.crescendo-magazine.be
         </div>
       </div>
     ),

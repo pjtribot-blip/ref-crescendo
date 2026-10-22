@@ -2,7 +2,8 @@ import './globals.css'
 import Header from './_components/Header'
 import Footer from './_components/Footer'
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ref.crescendo-magazine.be'
+import { SITE_URL } from '@/lib/site'
+import { SITE_JSON_LD, jsonLdScript } from '@/lib/json-ld'
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <body className="bg-stone-50 min-h-screen">
+        <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(SITE_JSON_LD)} />
         <Header />
         {children}
         <Footer />

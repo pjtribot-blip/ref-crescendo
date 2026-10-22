@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase'
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ref.crescendo-magazine.be'
+import { SITE_URL as BASE_URL } from '@/lib/site'
 const ANNEES_MILLESIMES = ['2021', '2022', '2023', '2024', '2025']
 
 const STATIC_ROUTES = [
