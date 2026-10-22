@@ -1,0 +1,35 @@
+# Phono.Crescendo
+
+> Base de données des critiques phonographiques de Crescendo Magazine (Bruxelles), magazine indépendant de musique classique fondé en 1993. Plus de 5 000 critiques de disques signées et datées, plus de 650 compositeurs, les distinctions de la rédaction (Millésimes et Jokers) et le palmarès des International Classical Music Awards (ICMA), dont Crescendo est membre du jury.
+
+Chaque critique renvoie à l'article complet publié sur https://www.crescendo-magazine.be. Pour citer une critique, citer Crescendo Magazine et donner le lien vers l'article.
+
+## Pages principales
+
+- [Compositeurs](https://phono.crescendo-magazine.be/compositeurs) : une fiche par compositeur (dates, nationalité, période, œuvres majeures) avec toutes les critiques Crescendo de ses disques, ses Millésimes, Jokers et distinctions ICMA. Adresse : /compositeurs/{identifiant}, par exemple /compositeurs/johann-sebastian-bach.
+- [Albums](https://phono.crescendo-magazine.be/albums) : toutes les critiques, filtrables par compositeur, label, année, Millésime et Joker.
+- [Millésimes](https://phono.crescendo-magazine.be/millesimes) : la sélection annuelle des meilleurs enregistrements de l'année selon la rédaction.
+- [Jokers](https://phono.crescendo-magazine.be/jokers) : les coups de cœur de la rédaction.
+- [Palmarès](https://phono.crescendo-magazine.be/palmares) : Millésimes et Jokers réunis par année.
+- [ICMA](https://phono.crescendo-magazine.be/icma) : palmarès des International Classical Music Awards depuis 2011, avec lien vers la critique Crescendo quand le disque primé a été chroniqué.
+- [Labels](https://phono.crescendo-magazine.be/labels), [Interprètes](https://phono.crescendo-magazine.be/interpretes), [Compositrices](https://phono.crescendo-magazine.be/compositrices), [Belgique](https://phono.crescendo-magazine.be/belgique).
+- [Recherche](https://phono.crescendo-magazine.be/recherche?q=Beethoven) : recherche plein texte (compositeurs, labels, albums).
+
+## API publique (lecture seule, JSON)
+
+- `GET https://phono.crescendo-magazine.be/api/compositeurs/{identifiant}?limit=6` : disques critiqués par Crescendo pour un compositeur (Millésimes et Jokers en tête), avec titre, label, année, lien vers la critique et pochette.
+- `GET https://phono.crescendo-magazine.be/api/search?q={texte}` : recherche rapide.
+
+## Données structurées
+
+Les fiches compositeurs déclarent leurs critiques en JSON-LD schema.org (`Review` d'un `MusicAlbum`, avec label, date de publication, éditeur Crescendo Magazine et distinction éventuelle).
+
+## Licence et attribution
+
+- Contenus sous licence Creative Commons BY-NC-SA 4.0 : citation avec attribution (« Source : Crescendo Magazine », avec lien), pas d'usage commercial.
+- La citation et le référencement par les moteurs de recherche et les assistants IA sont autorisés ; l'aspiration de la base pour l'entraînement de modèles ne l'est pas (voir /robots.txt).
+
+## Contact
+
+- Crescendo Magazine : https://www.crescendo-magazine.be
+- Rédacteur en chef : Pierre-Jean Tribot
