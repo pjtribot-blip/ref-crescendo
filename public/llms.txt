@@ -20,6 +20,10 @@ Chaque critique renvoie à l'article complet publié sur https://www.crescendo-m
 - `GET https://phono.crescendo-magazine.be/api/compositeurs/{identifiant}?limit=6` : disques critiqués par Crescendo pour un compositeur (Millésimes et Jokers en tête), avec titre, label, année, lien vers la critique et pochette.
 - `GET https://phono.crescendo-magazine.be/api/search?q={texte}` : recherche rapide.
 
+## Serveur MCP
+
+- `https://phono.crescendo-magazine.be/mcp` : serveur MCP (Model Context Protocol, lecture seule, sans clé) à ajouter comme connecteur dans un assistant IA. Outils : `chercher_critiques`, `fiche_compositeur`, `palmares_crescendo` (Millésimes et Jokers d'une année), `palmares_icma`.
+
 ## Données structurées
 
 Les fiches compositeurs déclarent leurs critiques en JSON-LD schema.org (`Review` d'un `MusicAlbum`, avec label, date de publication, éditeur Crescendo Magazine et distinction éventuelle).
