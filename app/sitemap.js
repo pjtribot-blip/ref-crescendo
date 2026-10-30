@@ -1,6 +1,11 @@
 import { supabase } from '@/lib/supabase'
 
 import { SITE_URL as BASE_URL } from '@/lib/site'
+
+// Sitemap mis en cache une journée : sans ce cache, chaque requête d'un robot sur
+// sitemap.xml relançait un SELECT sur toute la table compositeurs.
+export const revalidate = 86400
+
 const ANNEES_MILLESIMES = ['2021', '2022', '2023', '2024', '2025']
 
 const STATIC_ROUTES = [
