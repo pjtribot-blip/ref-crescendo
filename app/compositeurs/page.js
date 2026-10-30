@@ -1,56 +1,244 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import { ORDRE_PERIODES as PERIODES } from '@/lib/periodes'
-export const metadata = {
-  title: 'Compositeurs — Référence Crescendo',
-  description: 'Catalogue de 608 compositeurs de musique classique.',
+import { notFound, permanentRedirect } from 'next/navigation'
+import { PrestoButton } from '@/lib/presto'
+import { JokerLogo } from '@/lib/joker-logo'
+import { visibleLabel } from '@/lib/excluded-labels'
+import { findCompositeur } from '@/lib/compositeurs'
+import { compositeurJsonLd, jsonLdScript } from '@/lib/json-ld'
+import { getIcmaAwardsForComposer } from '@/lib/icma'
+import { ICMA_CRITIQUES } from '@/lib/icma-critiques'
+
+// Fiche mise en cache une journée : toutes les URL compositeurs sont listées au
+// sitemap, donc parcourues une à une par les robots. Sans ce cache, chaque passage
+// relançait un rendu + une requête Supabase ; ISR → un rendu par jour, puis cache.
+export const revalidate = 86400
+
+export async function generateMetadata({ params }) {
+  const { c } = await findCompositeur((await params).id, 'id, name, description')
+  if (!c) return {}
+  const title = c.name
+  const description = (c.description?.slice(0, 155) || `${c.name} — fiche compositeur sur la base de données critique de Crescendo Magazine.`).trim()
+  return {
+    title,
+    description,
+    alternates: { canonical: `/compositeurs/${encodeURIComponent(c.id)}` },
+    openGraph: { type: 'profile', title: `${c.name} — Phono.Crescendo`, description },
+    twitter: { card: 'summary_large_image', title: `${c.name} — Phono.Crescendo`, description },
+  }
 }
 
-export default async function CompositeursPage({ searchParams }) {
-  const periode = (await searchParams)?.periode || null
-  let query = supabase
-    .from('compositeurs')
-    .select('id, name, nationality, period, familiarity, born, died')
-    .order('born', { ascending: true })
-  if (periode) query = query.eq('period', periode)
-  const { data: compositeurs } = await query
-
-  const { data: albumsM } = await supabase
-    .from('albums')
-    .select('composers')
-    .not('millesime_annee', 'is', null)
-  const millesimes = new Set()
-  for (const row of albumsM || []) {
-    if (Array.isArray(row.composers)) {
-      for (const n of row.composers) millesimes.add(n)
-    }
+// Fiches Pauline existantes (mêmes identifiants que Phono), relues une fois par jour.
+// Sans réponse de Pauline, le bouton est simplement masqué.
+async function paulineSlugs() {
+  try {
+    const r = await fetch('https://pauline.crescendo-magazine.be/compositeurs/noms.json', { next: { revalidate: 86400 } })
+    return r.ok ? new Set((await r.json()).map(([, slug]) => slug)) : new Set()
+  } catch {
+    return new Set()
   }
+}
+
+export default async function CompositeurPage({ params }) {
+  const { c, requestedId } = await findCompositeur((await params).id)
+  if (!c) notFound()
+  // Ancienne adresse accentuée (/compositeurs/jean-sébastien-bach) → adresse sans accent
+  if (c.id !== requestedId) permanentRedirect(`/compositeurs/${encodeURIComponent(c.id)}`)
+  const hasPauline = (await paulineSlugs()).has(c.id)
+  const icmaAwards = await getIcmaAwardsForComposer(c.name).catch(() => [])
+
+  const { data: albumsRaw } = await supabase
+    .from('albums')
+    .select('id, title, article_title, label, published_at, critique_url, notes, cover_url, millesime_annee, millesime_categorie, millesime_label, is_joker')
+    .contains('composers', [c.name])
+    .order('published_at', { ascending: false, nullsFirst: false })
+    .order('id', { ascending: true })
+
+  const albums = albumsRaw || []
+  const millesimes = albums.filter(a => a.millesime_annee)
+  const matrimoineAlbums = albums.filter(a => a.millesime_categorie === 'matrimoine')
+
+  const nbMillesimes = millesimes.length
+  const nbJokers = albums.filter(a => a.is_joker).length
+  const singleMillesimeYear = nbMillesimes === 1 ? millesimes[0].millesime_annee : null
+  const hasMatrimoine = matrimoineAlbums.length > 0
+  const matrimoineYear = matrimoineAlbums[0]?.millesime_annee
+
+  const albumsToDisplay = albums.slice(0, 20)
 
   return (
-    <main className="max-w-5xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-light mb-2 text-stone-800">Compositeurs</h1>
-      <p className="text-stone-500 mb-8">{compositeurs?.length || 0} compositeurs · Référence Crescendo Magazine</p>
-      <div className="flex flex-wrap gap-2 mb-8">
-        <Link href="/compositeurs" className={`px-3 py-1 text-sm rounded-full border transition-colors ${!periode ? 'bg-stone-800 text-white border-stone-800' : 'border-stone-300 text-stone-600 hover:border-stone-500'}`}>Toutes</Link>
-        {PERIODES.map(p => (
-          <Link key={p} href={`/compositeurs?periode=${p}`} className={`px-3 py-1 text-sm rounded-full border transition-colors ${periode === p ? 'bg-stone-800 text-white border-stone-800' : 'border-stone-300 text-stone-600 hover:border-stone-500'}`}>{p}</Link>
-        ))}
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {compositeurs?.map(c => (
-          <Link key={c.id} href={`/compositeurs/${c.id}`} className="block p-4 border border-stone-200 rounded-lg hover:border-stone-400 hover:shadow-sm transition-all">
-            <div className="flex justify-between items-start mb-1 gap-2">
-              <h2 className="font-medium text-stone-800 text-sm leading-snug">{c.name}</h2>
-              <div className="flex gap-1 shrink-0">
-                {millesimes.has(c.name) && <span className="text-xs bg-amber-100 border border-amber-300 text-amber-900 px-1.5 py-0.5 rounded font-semibold">★</span>}
-                {c.familiarity === 'rare' && <span className="text-xs border border-amber-400 text-amber-600 px-1.5 py-0.5 rounded">Rare</span>}
-              </div>
+    <main className="max-w-3xl mx-auto px-4 py-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(compositeurJsonLd(c, albums))} />
+      <Link href="/compositeurs" className="text-sm text-stone-400 hover:text-stone-600 mb-6 inline-block">← Compositeurs</Link>
+      <div className="mb-8">
+        <div className="flex items-start justify-between gap-4 mb-2">
+          <h1 className="text-3xl font-light text-stone-800">{c.name}</h1>
+          {c.familiarity === 'rare' && <span className="text-xs border border-amber-400 text-amber-600 px-2 py-1 rounded shrink-0 mt-1">Rare</span>}
+        </div>
+        <p className="text-stone-400 text-sm mb-4">
+          {c.born && c.died ? `${c.born}–${c.died}` : ''}{c.nationality ? ` · ${c.nationality}` : ''}{c.period ? ` · ${c.period}` : ''}
+        </p>
+
+        {c.bio_enrichie && (
+          <section className="border-t border-b border-stone-200 py-6 my-6">
+            <h2 className="text-xs font-medium uppercase tracking-widest text-stone-500 mb-4">Présentation</h2>
+            <div className="font-serif text-base leading-relaxed text-stone-700 space-y-4">
+              {c.bio_enrichie.split(/\n\n+/).map((para, i) => (
+                <p key={i}>{para.trim()}</p>
+              ))}
             </div>
-            <p className="text-xs text-stone-400">{c.born && c.died ? `${c.born}–${c.died}` : ''}{c.nationality ? ` · ${c.nationality}` : ''}</p>
-            <p className="text-xs text-stone-500 mt-1">{c.period}</p>
-          </Link>
-        ))}
+            <p className="text-xs italic text-stone-400 mt-6">
+              Notice éditoriale générée par Claude et relue par la rédaction Crescendo.
+            </p>
+          </section>
+        )}
+
+        {(nbMillesimes > 0 || nbJokers > 0 || hasMatrimoine) && (
+          <div className="flex flex-wrap gap-2 mb-5">
+            {nbMillesimes > 0 && (
+              <Link
+                href="/palmares"
+                className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-100 border-2 border-amber-400 rounded-lg text-sm font-semibold text-amber-900 hover:bg-amber-200 hover:border-amber-500 shadow-sm transition-colors"
+              >
+                <span className="text-amber-600">★</span>
+                {nbMillesimes} Millésime{nbMillesimes > 1 ? 's' : ''} Crescendo
+                {singleMillesimeYear && (
+                  <span className="text-amber-700 font-normal">· {singleMillesimeYear}</span>
+                )}
+              </Link>
+            )}
+            {nbJokers > 0 && (
+              <Link
+                href="/jokers"
+                className="inline-flex items-center gap-2 px-3 py-1.5 bg-orange-100 border-2 border-orange-400 rounded-lg text-sm font-semibold text-orange-900 hover:bg-orange-200 hover:border-orange-500 shadow-sm transition-colors"
+              >
+                <JokerLogo size="md" /> {nbJokers} Joker{nbJokers > 1 ? 's' : ''}
+              </Link>
+            )}
+            {hasMatrimoine && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-rose-100 border border-rose-300 rounded-md text-xs font-semibold text-rose-800">
+                ★ Matrimoine
+              </span>
+            )}
+          </div>
+        )}
+
+        {hasMatrimoine && (
+          <p className="text-sm italic text-rose-800 mb-4">
+            Distinguée au Matrimoine Crescendo{matrimoineYear ? ` en ${matrimoineYear}` : ''}.
+          </p>
+        )}
+
+        {c.description && <p className="text-stone-600 leading-relaxed">{c.description}</p>}
       </div>
+
+      {c.key_works?.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-xs font-medium uppercase tracking-widest text-stone-400 mb-3">Œuvres majeures</h2>
+          <ul className="space-y-1">
+            {c.key_works.map((w, i) => (
+              <li key={i} className="text-stone-600 text-sm flex gap-2"><span className="text-stone-300">○</span> {w}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {icmaAwards.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-xs font-medium uppercase tracking-widest text-stone-400 mb-3">
+            Distinctions ICMA ({icmaAwards.length})
+          </h2>
+          <ul className="space-y-1">
+            {icmaAwards.map(a => (
+              <li key={a.id} className="text-sm text-stone-600 flex gap-2">
+                <Link href={`/icma?annee=${a.year}`} className="text-amber-700 hover:text-amber-900 shrink-0">{a.year}</Link>
+                <span>
+                  {a.album_title || a.laureate_name}
+                  <span className="text-stone-400"> · {a.icma_categories?.label_fr}{a.icma_labels?.name ? ` · ${a.icma_labels.name}` : ''}</span>
+                  {ICMA_CRITIQUES[a.id] && (
+                    <a href={ICMA_CRITIQUES[a.id]} target="_blank" rel="noopener noreferrer" className="text-stone-700 hover:text-stone-900"> · critique Crescendo →</a>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <section className="mb-10 flex gap-3 flex-wrap">
+        <a href={`https://www.crescendo-magazine.be/?s=${encodeURIComponent(c.name)}`} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 border border-stone-300 rounded hover:border-stone-500 text-stone-600 transition-colors">Rechercher sur Crescendo</a>
+        <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(c.name)}`} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-1.5 border border-stone-300 rounded hover:border-stone-500 text-stone-600 transition-colors">YouTube</a>
+        {/* Pauline partage les identifiants de compositeurs de Phono : lien vers sa fiche quand elle existe */}
+        {hasPauline && (
+          <a href={`https://pauline.crescendo-magazine.be/compositeur/${encodeURIComponent(c.id)}/`} target="_blank" rel="noopener" className="text-xs px-3 py-1.5 border border-amber-400 rounded hover:border-amber-600 text-amber-700 transition-colors">Découvrir {c.name} avec Pauline</a>
+        )}
+      </section>
+
+      {albums.length > 0 && (
+        <section>
+          <h2 className="text-xs font-medium uppercase tracking-widest text-stone-400 mb-4">
+            Critiques Crescendo ({albums.length})
+          </h2>
+          <div className="space-y-3">
+            {albumsToDisplay.map(a => (
+              <article
+                key={a.id}
+                className="flex gap-3 p-3 border border-stone-200 rounded-lg hover:border-stone-400 transition-all group"
+              >
+                <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="relative shrink-0">
+                  {a.cover_url ? (
+                    <img src={a.cover_url} alt="" className="w-14 h-14 object-cover rounded" />
+                  ) : (
+                    <div className="w-14 h-14 bg-stone-100 flex items-center justify-center rounded">
+                      <span className="text-stone-300 text-xl">♪</span>
+                    </div>
+                  )}
+                  {(a.millesime_annee || a.is_joker) && (
+                    <div className="absolute -top-1 -right-1 flex flex-col gap-0.5 items-end">
+                      {a.millesime_annee && (
+                        <span className="bg-amber-100 border border-amber-300 text-amber-900 text-[9px] font-semibold px-1 py-0.5 rounded shadow-sm whitespace-nowrap">
+                          ★ Millésime {a.millesime_annee}
+                        </span>
+                      )}
+                      {a.is_joker && (
+                        <span className="bg-orange-100 border border-orange-300 text-orange-800 text-[9px] font-semibold px-1 py-0.5 rounded shadow-sm inline-flex items-center gap-0.5">
+                          <JokerLogo size="xs" /> Joker
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </a>
+                <div className="min-w-0 flex-1">
+                  <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="block">
+                    <p className="text-sm font-medium text-stone-700 group-hover:text-stone-900 truncate">
+                      {a.title || a.article_title}
+                    </p>
+                    {visibleLabel(a.label) && (
+                      <p className="text-xs uppercase tracking-wider text-stone-500 mt-0.5 mb-1 truncate">
+                        {visibleLabel(a.label)}
+                      </p>
+                    )}
+                    {a.published_at && (
+                      <p className="text-xs text-stone-400">{new Date(a.published_at).getFullYear()}</p>
+                    )}
+                  </a>
+                  <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                    <a href={a.critique_url} target="_blank" rel="noopener noreferrer" className="text-xs text-stone-600 hover:text-stone-900 font-medium">
+                      Lire la chronique →
+                    </a>
+                    <PrestoButton title={a.title || a.article_title} composers={[c.name]} />
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+          {albums.length > albumsToDisplay.length && (
+            <p className="text-xs text-stone-400 mt-4 text-center italic">
+              {albums.length - albumsToDisplay.length} autre{albums.length - albumsToDisplay.length > 1 ? 's' : ''} critique{albums.length - albumsToDisplay.length > 1 ? 's' : ''} non affichée{albums.length - albumsToDisplay.length > 1 ? 's' : ''}.
+            </p>
+          )}
+        </section>
+      )}
     </main>
   )
 }
