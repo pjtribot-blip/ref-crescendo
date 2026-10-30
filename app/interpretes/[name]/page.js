@@ -1,6 +1,11 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
+// Fiche mise en cache une journée : les pages interprètes sont liées depuis /interpretes
+// et suivies par les robots. Sans ce cache, chaque passage relançait deux requêtes
+// Supabase (dont un .in sur la liste d'albums) ; ISR → un rendu par jour, puis cache.
+export const revalidate = 86400
+
 export default async function InterpretePage({ params }) {
   const resolvedParams = await params
   const decodedName = decodeURIComponent(resolvedParams.name)
