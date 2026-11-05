@@ -79,7 +79,15 @@ export default async function IcmaPage({ searchParams }) {
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-light text-stone-800 mb-2">ICMA</h1>
+      <h1 className="mb-3">
+        <img
+          src="/icma-logo.jpg"
+          alt="International Classical Music Awards (ICMA)"
+          width={640}
+          height={288}
+          className="h-16 sm:h-20 w-auto"
+        />
+      </h1>
       <p className="text-stone-500 mb-6">
         Le palmarès des <a href="https://www.icma-info.com" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-stone-800">International Classical Music Awards</a>,
         dont Crescendo Magazine est membre du jury.
