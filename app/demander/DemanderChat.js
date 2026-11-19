@@ -6,7 +6,7 @@ const EXEMPLES = [
   'Quels disques de Bach ont été distingués par Crescendo ?',
   'Les Millésimes de 2025',
   'Des disques de compositrices récemment chroniqués ?',
-  'Quels enregistrements de Mahler chez Alpha Classics ?',
+  'Quels enregistrements de Mahler avec Paavo Järvi ?',
 ]
 
 const ERREURS = {
@@ -22,7 +22,7 @@ function Ligne({ texte }) {
   while ((m = re.exec(texte))) {
     if (m.index > i) morceaux.push(texte.slice(i, m.index))
     if (m[1]) morceaux.push(<a key={m.index} href={m[2]} target="_blank" rel="noopener noreferrer" className="text-amber-800 underline decoration-amber-300 hover:decoration-amber-700">{m[1]}</a>)
-    else if (m[3]) morceaux.push(<strong key={m.index} className="font-semibold">{m[3]}</strong>)
+    else if (m[3]) morceaux.push(<strong key={m.index} className="font-semibold"><Ligne texte={m[3]} /></strong>)
     else morceaux.push(<a key={m.index} href={m[4]} target="_blank" rel="noopener noreferrer" className="text-amber-800 underline break-all">{m[4]}</a>)
     i = m.index + m[0].length
   }
