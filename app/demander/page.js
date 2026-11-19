@@ -17,6 +17,14 @@ export default function DemanderPage() {
       </p>
       <DemanderChat />
 
+      <p className="text-xs text-stone-400 leading-relaxed mt-8">
+        <strong className="font-medium text-stone-500">Transparence :</strong> l’assistant est propulsé par le modèle
+        DeepSeek V4 Pro (société DeepSeek, Chine), appelé via le service OpenRouter. Il ne s’appuie que sur la base
+        Phono.Crescendo : il n’a pas accès à Internet et ne lit pas le texte des critiques, seulement leurs titres,
+        interprètes, labels, dates et distinctions. Vos questions sont transmises à ces services pour obtenir la réponse ;
+        Phono.Crescendo ne les conserve pas. N’y indiquez pas d’informations personnelles.
+      </p>
+
       <section id="connecteur" className="mt-16 pt-8 border-t border-stone-200 scroll-mt-24">
         <h2 className="text-2xl font-light text-stone-800 mb-2">Connecter Phono à votre IA</h2>
         <p className="text-stone-600 text-sm leading-relaxed mb-4">
