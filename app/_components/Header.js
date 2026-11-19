@@ -39,6 +39,7 @@ const NAV_GROUPS = [
 ]
 
 const DIRECT_LINKS = [
+  { href: '/demander', label: 'Assistant' },
   { href: '/statistiques', label: 'Chiffres' },
 ]
 
