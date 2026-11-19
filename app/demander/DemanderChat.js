@@ -6,7 +6,7 @@ const EXEMPLES = [
   'Quels disques de Bach ont été distingués par Crescendo ?',
   'Les Millésimes de 2025',
   'Des disques de compositrices récemment chroniqués ?',
-  'Quels enregistrements de Mahler chez Alpha Classics ?',
+  'Quels enregistrements de Mahler avec Paavo Järvi ?',
 ]
 
 const ERREURS = {
