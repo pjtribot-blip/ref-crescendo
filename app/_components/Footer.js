@@ -33,7 +33,7 @@ export default function Footer() {
             Crescendo Magazine
           </a>
           <span className="text-stone-300" aria-hidden="true">|</span>
-          <a href="/mcp" className="hover:text-stone-900 underline underline-offset-2">Connecteur IA (MCP)</a>
+          <a href="/demander#connecteur" className="hover:text-stone-900 underline underline-offset-2">Connecteur IA (MCP)</a>
         </nav>
         <p className="text-xs text-stone-400 pt-1">
           © Crescendo Magazine 2026
