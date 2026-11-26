@@ -14,7 +14,7 @@ const TRAINING = [
   'Google-Extended', // entraînement Gemini (Googlebot reste autorisé)
   'Applebot-Extended',
   'Bytespider', // ByteDance
-  'anthropic-ai', // Anthropic, anciens robots d'entraînement
+  'anthropic-ai', 'ClaudeBot', // Anthropic, entraînement
   'Meta-ExternalAgent', 'FacebookBot',
   'cohere-ai', 'cohere-training-data-crawler',
   'Diffbot',
@@ -27,7 +27,7 @@ const ALLOWED = [
   'YandexBot', 'Baiduspider',
   'OAI-SearchBot', 'ChatGPT-User', // recherche ChatGPT, consultation à la demande
   'PerplexityBot', 'Perplexity-User',
-  'ClaudeBot', 'Claude-SearchBot', 'Claude-User',
+  'Claude-SearchBot', 'Claude-User', // recherche Claude, consultation à la demande
 ]
 
 export default function robots() {
